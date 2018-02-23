@@ -1,24 +1,24 @@
 {
-  "name": "colourpicker",
-  "version": "0.0.1",
-  "description": "A pure TypeScript colour picker",
-  "main": "colourpicker.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lrvolle/ColourPicker.git"
-  },
-  "author": "Lucas Volle",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/lrvolle/ColourPicker/issues"
-  },
-  "homepage": "https://github.com/lrvolle/ColourPicker#readme",
-  "devDependencies": {
-    "tslint": "^5.9.1",
-    "tslint-config-airbnb-base": "^0.1.0",
-    "typescript": "^2.7.2"
-  }
+	"name": "colourpicker",
+	"version": "0.0.1",
+	"description": "A pure TypeScript colour picker",
+	"main": "colourpicker.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/lrvolle/ColourPicker.git"
+	},
+	"author": "Lucas Volle",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/lrvolle/ColourPicker/issues"
+	},
+	"homepage": "https://github.com/lrvolle/ColourPicker#readme",
+	"devDependencies": {
+		"tslint": "^5.9.1",
+		"tslint-config-airbnb-base": "^0.1.0",
+		"typescript": "^2.7.2"
+	}
 }
