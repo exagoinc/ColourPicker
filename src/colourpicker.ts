@@ -33,6 +33,13 @@ class ColourPicker {
 		this.onChange = onChange;
 		this.options = options;
 
+		if (this.container == null) {
+			throw new Error('Colour Picker Error: specified container is null.');
+		}
+		if (this.onChange == null) {
+			throw new Error('Colour Picker Error: specified onChange callback is null.');
+		}
+
 		const docFragment = document.createDocumentFragment();
 		
 		this.colourField = this.CreateColourField();
@@ -66,7 +73,7 @@ class ColourPicker {
 		const fieldMarker = document.createElement('div');
 		fieldMarker.classList.add('colour-field__marker');
 		colourField.appendChild(fieldMarker);
-		const x = 1;
+
 		return colourField;
 	}
 

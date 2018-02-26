@@ -5,6 +5,7 @@
 		"module": "none",                         /* Specify module code generation: 'none', commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
 		"sourceMap": true,                        /* Generates corresponding '.map' file. */
 		"removeComments": true,                   /* Do not emit comments to output. */
+		"outDir": "./build",
 
 		/* Strict Type-Checking Options */
 		"strict": true,                           /* Enable all strict type-checking options. */
