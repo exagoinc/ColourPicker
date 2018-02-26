@@ -17,9 +17,9 @@ class ColourPicker {
 	private blueInput: HTMLInputElement;
 	private alphaInput: HTMLInputElement;
 
-	private onChange: (rgb: cpRGB) => void;
+	private onChange: (rgba: cpRGBA) => void;
 
-	constructor(container: HTMLElement,	onChange: (rgb: cpRGB) => void, 
+	constructor(container: HTMLElement,	onChange: (rgba: cpRGBA) => void, 
 		options: cpOptions = {
 			showAlpha: false,
 
@@ -66,7 +66,7 @@ class ColourPicker {
 		const fieldMarker = document.createElement('div');
 		fieldMarker.classList.add('colour-field__marker');
 		colourField.appendChild(fieldMarker);
-
+		const x = 1;
 		return colourField;
 	}
 
@@ -153,10 +153,11 @@ interface cpOptions{
 	alphaInputLabel: string;
 }
 
-interface cpRGB {
+interface cpRGBA {
 	r: number;
 	g: number;
 	b: number;
+	a: number;
 }
 
 enum cpInputType {
