@@ -5,103 +5,103 @@
  */
 
 .colour-picker {
-    width: 200px;
-    padding: 6px;
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-    border: 1px solid rgba(200, 200, 200, 0.5);
-    border-radius: 3px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.12);
-    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 12px;
-    background-color: #FFF;
+	width: 200px;
+	padding: 6px;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	border: 1px solid rgba(200, 200, 200, 0.5);
+	border-radius: 3px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.12);
+	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	background-color: #FFF;
 }
 
 .colour-field {
-    position: relative;
-    width: 100%;
-    height: 170px;
-    background: linear-gradient(to right, #FFF, #F00);
+	position: relative;
+	width: 100%;
+	height: 170px;
+	background: linear-gradient(to right, #FFF, #F00);
 
-    .colour-field__lightness {
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(to bottom, fade(#000, 0), #000);
-        user-select: none;
-    }
+	.colour-field__lightness {
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(to bottom, fade(#000, 0), #000);
+		user-select: none;
+	}
 
-    .colour-field__marker {
-        position: absolute;
-        bottom: calc(100% - ~'-' 5px);
-        left: calc(100% ~'-' 5px);
-        width: 10px;
-        height: 10px;
-        border: 1px solid rgb(255, 255, 255);
-        border-radius: 5px;
-        box-sizing: border-box;
-        box-shadow: 0 0 1px 1px rgb(0, 0, 0);
-        pointer-events: none;
-    }
+	.colour-field__marker {
+		position: absolute;
+		bottom: calc(100% - ~'-' 5px);
+		left: calc(100% ~'-' 5px);
+		width: 10px;
+		height: 10px;
+		border: 1px solid rgb(255, 255, 255);
+		border-radius: 5px;
+		box-sizing: border-box;
+		box-shadow: 0 0 1px 1px rgb(0, 0, 0);
+		pointer-events: none;
+	}
 }
 
 .hue-slider {
-    position: relative;
-    height: 13px;
-    width: calc(100% ~'-' 8px);
-    padding: 1px;
-    margin: 8px 4px 9px 0;
-    user-select: none;
+	position: relative;
+	height: 13px;
+	width: calc(100% ~'-' 8px);
+	padding: 1px;
+	margin: 8px 4px 9px 0;
+	user-select: none;
 
-    .hue-slider__gradient {
-        height: 100%;
-        width: calc(100% ~'+' 3px);
-        margin-right: -2px;
-        border-radius: 2px;
-        background: linear-gradient(to right, #F00 0%, #FF0 17%, #0F0 33%, #0FF 50%, #00F 67%, #F0F 83%, #F00 100%)
-    }
+	.hue-slider__gradient {
+		height: 100%;
+		width: calc(100% ~'+' 3px);
+		margin-right: -2px;
+		border-radius: 2px;
+		background: linear-gradient(to right, #F00 0%, #FF0 17%, #0F0 33%, #0FF 50%, #00F 67%, #F0F 83%, #F00 100%)
+	}
 
-    .hue-slider__handle {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 3px;
-        height: 100%;
-        border: 1px solid rgb(255, 255, 255);
-        border-radius: 2px;
-        box-sizing: border-box;
-        box-shadow: 0 0 1px 1px rgb(0, 0, 0);
-        pointer-events: none;
-    }
+	.hue-slider__handle {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 3px;
+		height: 100%;
+		border: 1px solid rgb(255, 255, 255);
+		border-radius: 2px;
+		box-sizing: border-box;
+		box-shadow: 0 0 1px 1px rgb(0, 0, 0);
+		pointer-events: none;
+	}
 }
 
 .colour-inputs {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
 }
 
 .colour-input {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 
-    & > input {
-        width: 30px;
-        font-size: 12px;
-        text-align: center;
-        border: 1px solid rgba(200, 200, 200, 0.5);
-        border-radius: 2px;
-        -webkit-appearance: none;
-    }
+	& > input {
+		width: 30px;
+		font-size: 12px;
+		text-align: center;
+		border: 1px solid rgba(200, 200, 200, 0.5);
+		border-radius: 2px;
+		-webkit-appearance: none;
+	}
 
-    .colour-input__hex {
-        width: 60px;
-    }
+	.colour-input__hex {
+		width: 60px;
+	}
 
-    .colour-input__lbl {
-        margin-top: 3px;
-        user-select: none;
-    }
+	.colour-input__lbl {
+		margin-top: 3px;
+		user-select: none;
+	}
 }
 
