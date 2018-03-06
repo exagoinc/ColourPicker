@@ -4,7 +4,8 @@
 	"description": "A pure TypeScript colour picker",
 	"main": "colourpicker.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "concurrently --kill-others \"tsc -w\" \"less-watch-compiler --source-map src build\"",
+		"build": "tsc && less-watch-compiler --run-once src build"
 	},
 	"repository": {
 		"type": "git",
@@ -17,8 +18,13 @@
 	},
 	"homepage": "https://github.com/lrvolle/ColourPicker#readme",
 	"devDependencies": {
+		"concurrently": "^3.5.1",
+		"less-watch-compiler": "^1.11.0",
 		"tslint": "^5.9.1",
-		"tslint-config-airbnb-base": "^0.1.0",
+		"tslint-config-airbnb-base": "^0.1.0"
+	},
+	"dependencies": {
+		"less": "^3.0.1",
 		"typescript": "^2.7.2"
 	}
 }
