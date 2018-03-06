@@ -5,7 +5,7 @@
  */
 
 class ColourPicker {
-	private options: cpOptions;
+	private options: ColourPickerOptions;
 
 	private container: HTMLElement;
 	private colourField: HTMLElement;
@@ -17,18 +17,11 @@ class ColourPicker {
 	private blueInput: HTMLInputElement;
 	private alphaInput: HTMLInputElement;
 
-	private onChange: (rgba: cpRGBA) => void;
+	private onChange: (colour: Colour) => void;
 
-	constructor(container: HTMLElement,	onChange: (rgba: cpRGBA) => void, 
-		options: cpOptions = {
-			showAlpha: false,
+	constructor(container: HTMLElement,	onChange: (rgba: Colour) => void,
+		options = new ColourPickerOptions()) {
 
-			hexInputLabel: 'Hex',
-			redInputLabel: 'R',
-			greenInputLabel: 'G',
-			blueInputLabel: 'B',
-			alphaInputLabel: 'A',
-		}) {
 		this.container = container;
 		this.onChange = onChange;
 		this.options = options;
@@ -95,20 +88,20 @@ class ColourPicker {
 		const hexInputItem = this.CreateHexInput();
 		valueInputContainer.appendChild(hexInputItem);
 
-		const rInputItem = this.CreateIntegerInput(cpInputType.Red, this.options.redInputLabel);
+		const rInputItem = this.CreateIntegerInput(cpEnumRGBA.Red, this.options.redInputLabel);
 		this.redInput = rInputItem.querySelector('input');
 		valueInputContainer.appendChild(rInputItem);
 
-		const gInputItem = this.CreateIntegerInput(cpInputType.Green, this.options.greenInputLabel);
+		const gInputItem = this.CreateIntegerInput(cpEnumRGBA.Green, this.options.greenInputLabel);
 		this.greenInput = gInputItem.querySelector('input');
 		valueInputContainer.appendChild(gInputItem);
 
-		const bInputItem = this.CreateIntegerInput(cpInputType.Blue, this.options.blueInputLabel);
+		const bInputItem = this.CreateIntegerInput(cpEnumRGBA.Blue, this.options.blueInputLabel);
 		this.blueInput = bInputItem.querySelector('input');
 		valueInputContainer.appendChild(bInputItem);
 
 		if (this.options.showAlpha) {
-			const aInputItem = this.CreateIntegerInput(cpInputType.Alpha, this.options.alphaInputLabel);
+			const aInputItem = this.CreateIntegerInput(cpEnumRGBA.Alpha, this.options.alphaInputLabel);
 			this.alphaInput = aInputItem.querySelector('input');
 			valueInputContainer.appendChild(aInputItem);
 		}
@@ -132,7 +125,7 @@ class ColourPicker {
 		return hexInputContainer;
 	}
 
-	CreateIntegerInput(inputType: cpInputType, label: string): HTMLElement {
+	CreateIntegerInput(inputType: cpEnumRGBA, label: string): HTMLElement {
 		const intInputContainer = document.createElement('div'); 
 		intInputContainer.classList.add('colour-input');
 
@@ -147,27 +140,106 @@ class ColourPicker {
 
 		return intInputContainer;
 	}
+
+
 }
 
-interface cpOptions{
-	showAlpha: boolean;
+class ColourPickerOptions{
+	public initialColour: Colour = new Colour();
+	public showAlpha: boolean = false;
 
 	/** Labels that appear underneath input boxes */
-	hexInputLabel: string;
-	redInputLabel: string;
-	greenInputLabel: string;
-	blueInputLabel: string;
-	alphaInputLabel: string;
+	public hexInputLabel: string = 'Hex';
+	public redInputLabel: string = 'R';
+	public greenInputLabel?: string = 'G';
+	public blueInputLabel?: string = 'B';
+	public alphaInputLabel?: string = 'A';
+}
+
+class Colour {
+	private R: number = 255;
+	private G: number = 255;
+	private B: number = 255;
+	private A: number = 255;
+
+	public SetRGBA(rgba: cpRGBA) {
+		this.R = rgba.R;
+		this.G = rgba.G;
+		this.B = rgba.B;
+		this.A = rgba.A;
+	}
+
+	public SetHex(hex: string): void {
+		if (hex.length === 0) {
+			throw Error('Empty string passed to SetHex');
+		}
+
+		if (hex[0] === '#') {
+			hex = hex.substring(1);
+		}
+
+		if(hex.length === 3 || hex.length === 4) {
+			this.R = parseInt(hex[0], 8);
+			this.G = parseInt(hex[1], 8);
+			this.B = parseInt(hex[2], 8);
+			this.A = hex.length === 4 ? parseInt(hex[4], 8) : 255;			
+		} else if (hex.length === 6 || hex.length === 8) {
+			this.R = parseInt(hex.substr(0, 2), 8);
+			this.G = parseInt(hex.substr(2, 2), 8);
+			this.B = parseInt(hex.substr(4, 2), 8);
+			this.A = hex.length === 8 ? parseInt(hex.substr(6, 2)) : 255;	
+		} else {
+			throw Error(`ColourPicker: SetHex paramater's length is ${hex.length}`);
+		}
+	}
+
+	public SetHSL(hsl: cpHSL): void {
+
+	}
+
+	public ToString(includeAlpha = false): string {
+		let str = includeAlpha ? 'rgba(' : 'rgb(';
+		str += this.R + ', ' + this.G + ', ' + this.B;
+		str += includeAlpha ? ', ' + this.A + ')' : ')';
+		return str;
+	}
+
+	public GetRGBA(): cpRGBA {
+		return { R: this.R, G: this.G, B: this.B, A: this.A };
+	}
+	
+	public GetHex(includeAlpha = false): string {
+		let hex = '' + Colour.DecimalToHex(this.R) + Colour.DecimalToHex(this.G) + Colour.DecimalToHex(this.B);
+		hex += includeAlpha ? Colour.DecimalToHex(this.A) : '';
+		return hex;
+	}
+
+	public GetHSL(): cpHSL {
+		let hsl = { H: 0, S: 1, L: 1 };
+
+		return hsl;
+	}
+
+	private static DecimalToHex(decimal: number) {
+		const hex = decimal.toString(16);
+		return hex.length === 1 ? '0' + hex : hex;
+	}
 }
 
 interface cpRGBA {
-	r: number;
-	g: number;
-	b: number;
-	a: number;
+	R: number;
+	G: number;
+	B: number;
+	A: number;
 }
 
-enum cpInputType {
+interface cpHSL {
+	H: number;
+	S: number;
+	L: number;
+}
+
+enum cpEnumRGBA {
 	Red = 'r',
 	Green = 'g', 
 	Blue = 'b', 
