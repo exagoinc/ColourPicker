@@ -100,7 +100,7 @@ class ColourPicker {
 		this.blueInput = bInputItem.querySelector('input');
 		valueInputContainer.appendChild(bInputItem);
 
-		if (this.options.showAlpha) {
+		if (this.options.showAlphaControl) {
 			const aInputItem = this.CreateIntegerInput(cpEnumRGBA.Alpha, this.options.alphaInputLabel);
 			this.alphaInput = aInputItem.querySelector('input');
 			valueInputContainer.appendChild(aInputItem);
@@ -141,12 +141,11 @@ class ColourPicker {
 		return intInputContainer;
 	}
 
-
 }
 
 class ColourPickerOptions{
 	public initialColour: Colour = new Colour();
-	public showAlpha: boolean = false;
+	public showAlphaControl: boolean = false;
 
 	/** Labels that appear underneath input boxes */
 	public hexInputLabel: string = 'Hex';
@@ -161,6 +160,18 @@ class Colour {
 	private G: number = 255;
 	private B: number = 255;
 	private A: number = 255;
+
+	constructor(colour?: string | cpRGBA | cpHSL) {
+		if (colour != null) {
+			if (colour instanceof String) {
+				this.SetHex(colour as string);
+			} else if (colour.hasOwnProperty('R')) {
+				this.SetRGBA(colour as cpRGBA);
+			} else if (colour.hasOwnProperty('H')) {
+				this.SetHSL(colour as cpHSL);
+			}
+		}
+	}
 
 	public SetRGBA(rgba: cpRGBA) {
 		this.R = rgba.R;
@@ -194,7 +205,11 @@ class Colour {
 	}
 
 	public SetHSL(hsl: cpHSL): void {
-
+		const q = hsl.L < 1/2 ? hsl.L * (hsl.S + 1) : (hsl.L + hsl.S) - (hsl.L * hsl.S);
+		const p = hsl.L * 2 - q;
+		this.R = Math.round(this.HueToRGB(p, q, hsl.H + 1/3));
+		this.G = Math.round(this.HueToRGB(p, q, hsl.H));
+		this.B = Math.round(this.HueToRGB(p, q, hsl.H - 1/3));
 	}
 
 	public ToString(includeAlpha = false): string {
@@ -209,20 +224,57 @@ class Colour {
 	}
 	
 	public GetHex(includeAlpha = false): string {
-		let hex = '' + Colour.DecimalToHex(this.R) + Colour.DecimalToHex(this.G) + Colour.DecimalToHex(this.B);
-		hex += includeAlpha ? Colour.DecimalToHex(this.A) : '';
+		let hex = '' + this.DecimalToHex(this.R) + this.DecimalToHex(this.G) + Colour.DecimalToHex(this.B);
+		hex += includeAlpha ? this.DecimalToHex(this.A) : '';
 		return hex;
 	}
 
 	public GetHSL(): cpHSL {
-		let hsl = { H: 0, S: 1, L: 1 };
+		const r = this.R / 255;
+		const g = this.G / 255;
+		const b = this.B / 255;
+		let hsl = { H: 0, S: 0, L: 0 };
+
+		const max = Math.max(r, g, b);
+		const min = Math.min(r, g, b);
+		const delta = max - min;
+		
+		hsl.L = (max + min) / 2;
+		hsl.S = hsl.L > 1/2 ? delta / (2 - delta) : delta / (max + min);
+		
+		if (r === max) {
+			hsl.H = (g - b) / delta + (g < b ? 6 : 0);
+		} else if (g === max) {
+			hsl.H = (b - r) / delta + 2;
+		} else if (b === max) {
+			hsl.H = (b - r) / delta + 4;
+		}
+		hsl.H = hsl.H / 6;
 
 		return hsl;
 	}
 
-	private static DecimalToHex(decimal: number) {
+	private DecimalToHex(decimal: number) {
 		const hex = decimal.toString(16);
 		return hex.length === 1 ? '0' + hex : hex;
+	}
+
+	private HueToRGB(p: number, q: number, t: number) {
+		if (t < 0) {
+			t++;
+		} else if (t > 1) {
+			t--;
+		}
+
+		if (t < 1/6) {
+			return p + (q - p) * 6 * t;
+		} else if (t < 1/2) {
+			return q;
+		} else if (t < 2/3) {
+			return p + (q - p) * 6 * (2/3 - t);
+		} else {
+			return p;
+		}
 	}
 }
 
