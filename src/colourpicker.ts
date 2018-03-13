@@ -224,7 +224,7 @@ class Colour {
 	}
 	
 	public GetHex(includeAlpha = false): string {
-		let hex = '' + this.DecimalToHex(this.R) + this.DecimalToHex(this.G) + Colour.DecimalToHex(this.B);
+		let hex = '' + this.DecimalToHex(this.R) + this.DecimalToHex(this.G) + this.DecimalToHex(this.B);
 		hex += includeAlpha ? this.DecimalToHex(this.A) : '';
 		return hex;
 	}
