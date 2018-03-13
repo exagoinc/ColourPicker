@@ -31,7 +31,7 @@
 
     .colour-field__marker {
         position: absolute;
-        top: 0;
+        bottom: 0;
         left: 0;
         width: 8px;
         height: 8px;
@@ -43,7 +43,29 @@
 }
 
 .hue-slider {
-    height: 30px;
+    position: relative;
+    height: 10px;
+    padding: 1px;
+	margin: 6px;
+
+    .hue-slider__gradient {
+        height: 100%;
+        width: 100%;
+        border-radius: 2px;
+        background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)
+    }
+
+    .hue-slider__handle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 100%;
+        border: 1px solid rgb(255, 255, 255);
+        border-radius: 2px;
+        box-sizing: border-box;
+        box-shadow: 0 0 1px 1px rgb(0, 0, 0);
+    }
 }
 
 .colour-inputs {

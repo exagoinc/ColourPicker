@@ -9,7 +9,9 @@ class ColourPicker {
 
 	private container: HTMLElement;
 	private colourField: HTMLElement;
+	private colourFieldMarker: HTMLElement;
 	private hueSlider: HTMLElement;
+	private hueSliderHandle: HTMLElement;
 	private colourPreview?: HTMLElement;
 	private hexInput: HTMLInputElement;
 	private redInput: HTMLInputElement;
@@ -36,9 +38,11 @@ class ColourPicker {
 		const docFragment = document.createDocumentFragment();
 		
 		this.colourField = this.CreateColourField();
+		this.colourFieldMarker = this.colourField.querySelector('.colour-field__marker');
 		docFragment.appendChild(this.colourField);
 
 		this.hueSlider = this.CreateHueSlider();
+		this.hueSliderHandle = this.hueSlider.querySelector('.hue-slider__handle');
 		docFragment.appendChild(this.hueSlider);
 
 		const valueInputContainer = this.CreateValueInputs();
@@ -74,6 +78,10 @@ class ColourPicker {
 		const hueSlider = document.createElement('div');
 		hueSlider.classList.add('hue-slider');
 
+		const hueSliderGradient = document.createElement('div');
+		hueSliderGradient.classList.add('hue-slider__gradient');
+		hueSlider.appendChild(hueSliderGradient);
+
 		const hueSliderHandle = document.createElement('div');
 		hueSliderHandle.classList.add('hue-slider__handle');
 		hueSlider.appendChild(hueSliderHandle);
@@ -87,23 +95,58 @@ class ColourPicker {
 
 		const hexInputItem = this.CreateHexInput();
 		valueInputContainer.appendChild(hexInputItem);
+		this.hexInput.addEventListener("change", () => {
+			this.OnHexChange(this.hexInput.value);
+		});
 
 		const rInputItem = this.CreateIntegerInput(cpEnumRGBA.Red, this.options.redInputLabel);
 		this.redInput = rInputItem.querySelector('input');
 		valueInputContainer.appendChild(rInputItem);
+		this.redInput.addEventListener("change", () => {
+			this.OnRGBAChange({ 
+				R: parseInt(this.redInput.value),
+				G: parseInt(this.greenInput.value),
+				B: parseInt(this.blueInput.value),
+				A: parseInt(this.alphaInput.value),
+			});
+		});
 
 		const gInputItem = this.CreateIntegerInput(cpEnumRGBA.Green, this.options.greenInputLabel);
 		this.greenInput = gInputItem.querySelector('input');
 		valueInputContainer.appendChild(gInputItem);
+		this.greenInput.addEventListener("change", () => {
+			this.OnRGBAChange({ 
+				R: parseInt(this.redInput.value),
+				G: parseInt(this.greenInput.value),
+				B: parseInt(this.blueInput.value),
+				A: parseInt(this.alphaInput.value),
+			});
+		});
 
 		const bInputItem = this.CreateIntegerInput(cpEnumRGBA.Blue, this.options.blueInputLabel);
 		this.blueInput = bInputItem.querySelector('input');
 		valueInputContainer.appendChild(bInputItem);
+		this.blueInput.addEventListener("change", () => {
+			this.OnRGBAChange({ 
+				R: parseInt(this.redInput.value),
+				G: parseInt(this.greenInput.value),
+				B: parseInt(this.blueInput.value),
+				A: parseInt(this.alphaInput.value),
+			});
+		});
 
 		if (this.options.showAlphaControl) {
 			const aInputItem = this.CreateIntegerInput(cpEnumRGBA.Alpha, this.options.alphaInputLabel);
 			this.alphaInput = aInputItem.querySelector('input');
 			valueInputContainer.appendChild(aInputItem);
+			this.alphaInput.addEventListener("change", () => {
+				this.OnRGBAChange({ 
+					R: parseInt(this.redInput.value),
+					G: parseInt(this.greenInput.value),
+					B: parseInt(this.blueInput.value),
+					A: parseInt(this.alphaInput.value),
+				});
+			});
 		}
 
 		return valueInputContainer;
@@ -141,6 +184,38 @@ class ColourPicker {
 		return intInputContainer;
 	}
 
+	OnHexChange(hex: string): void {
+		const newColour = new Colour(hex);
+		this.UpdateRGBAInput(newColour.GetRGBA());
+		this.UpdateColourField(newColour.GetHSL());
+
+		this.onChange(newColour);
+	}
+
+	OnRGBAChange(rgba: cpRGBA): void {
+
+	}
+
+	OnHSLChange(hsl: cpHSL): void {
+
+	}
+
+	UpdateHexInput(hex: string): void {
+		this.hexInput.value = hex;
+	}
+
+	UpdateRGBAInput(rgba: cpRGBA): void {
+		this.redInput.value = rgba.R.toString();
+		this.greenInput.value = rgba.G.toString();
+		this.blueInput.value = rgba.B.toString();
+		this.alphaInput.value = rgba.A.toString();
+	}
+
+	UpdateColourField(hsl: cpHSL): void {
+		this.hueSliderHandle.style.left = (hsl.H * 100) + '%';
+		this.colourFieldMarker.style.left = (hsl.S * 100) + '%';
+		this.colourFieldMarker.style.bottom = (hsl.L * 100) + '%';
+	}
 }
 
 class ColourPickerOptions{
