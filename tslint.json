@@ -7,7 +7,7 @@
 	"rules": {
 		"ter-indent": [true, "tab", { "SwitchCase": 1 }],
 		"no-trailing-whitespace": false,
-		"no-magic-numbers": false,
+		"no-magic-numbers": false
 	},
 	"rulesDirectory": []
 }
