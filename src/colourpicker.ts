@@ -95,43 +95,43 @@ class ColourPicker {
 
 		const hexInputItem = this.CreateHexInput();
 		valueInputContainer.appendChild(hexInputItem);
-		this.hexInput.addEventListener("change", () => {
-			this.OnHexChange(this.hexInput.value);
+		this.hexInput.addEventListener('keypress', () => {
+			this.OnChange(this.hexInput.value);
 		});
 
 		const rInputItem = this.CreateIntegerInput(cpEnumRGBA.Red, this.options.redInputLabel);
 		this.redInput = rInputItem.querySelector('input');
 		valueInputContainer.appendChild(rInputItem);
-		this.redInput.addEventListener("change", () => {
-			this.OnRGBAChange({ 
-				R: parseInt(this.redInput.value),
-				G: parseInt(this.greenInput.value),
-				B: parseInt(this.blueInput.value),
-				A: parseInt(this.alphaInput.value),
+		this.redInput.addEventListener('keypress', () => {
+			this.OnChange({ 
+				R: parseInt(this.redInput.value, 10),
+				G: parseInt(this.greenInput.value, 10),
+				B: parseInt(this.blueInput.value, 10),
+				A: this.alphaInput != null ? parseInt(this.alphaInput.value, 10) : 255,
 			});
 		});
 
 		const gInputItem = this.CreateIntegerInput(cpEnumRGBA.Green, this.options.greenInputLabel);
 		this.greenInput = gInputItem.querySelector('input');
 		valueInputContainer.appendChild(gInputItem);
-		this.greenInput.addEventListener("change", () => {
-			this.OnRGBAChange({ 
-				R: parseInt(this.redInput.value),
-				G: parseInt(this.greenInput.value),
-				B: parseInt(this.blueInput.value),
-				A: parseInt(this.alphaInput.value),
+		this.greenInput.addEventListener('keypress', () => {
+			this.OnChange({ 
+				R: parseInt(this.redInput.value, 10),
+				G: parseInt(this.greenInput.value, 10),
+				B: parseInt(this.blueInput.value, 10),
+				A: this.alphaInput != null ? parseInt(this.alphaInput.value, 10) : 255,
 			});
 		});
 
 		const bInputItem = this.CreateIntegerInput(cpEnumRGBA.Blue, this.options.blueInputLabel);
 		this.blueInput = bInputItem.querySelector('input');
 		valueInputContainer.appendChild(bInputItem);
-		this.blueInput.addEventListener("change", () => {
-			this.OnRGBAChange({ 
-				R: parseInt(this.redInput.value),
-				G: parseInt(this.greenInput.value),
-				B: parseInt(this.blueInput.value),
-				A: parseInt(this.alphaInput.value),
+		this.blueInput.addEventListener('keypress', () => {
+			this.OnChange({ 
+				R: parseInt(this.redInput.value, 10),
+				G: parseInt(this.greenInput.value, 10),
+				B: parseInt(this.blueInput.value, 10),
+				A: this.alphaInput != null ? parseInt(this.alphaInput.value, 10) : 255,
 			});
 		});
 
@@ -139,12 +139,12 @@ class ColourPicker {
 			const aInputItem = this.CreateIntegerInput(cpEnumRGBA.Alpha, this.options.alphaInputLabel);
 			this.alphaInput = aInputItem.querySelector('input');
 			valueInputContainer.appendChild(aInputItem);
-			this.alphaInput.addEventListener("change", () => {
-				this.OnRGBAChange({ 
-					R: parseInt(this.redInput.value),
-					G: parseInt(this.greenInput.value),
-					B: parseInt(this.blueInput.value),
-					A: parseInt(this.alphaInput.value),
+			this.alphaInput.addEventListener('keypress', () => {
+				this.OnChange({ 
+					R: parseInt(this.redInput.value, 10),
+					G: parseInt(this.greenInput.value, 10),
+					B: parseInt(this.blueInput.value, 10),
+					A: this.alphaInput != null ? parseInt(this.alphaInput.value, 10) : 255,
 				});
 			});
 		}
@@ -184,20 +184,30 @@ class ColourPicker {
 		return intInputContainer;
 	}
 
-	OnHexChange(hex: string): void {
-		const newColour = new Colour(hex);
-		this.UpdateRGBAInput(newColour.GetRGBA());
-		this.UpdateColourField(newColour.GetHSL());
+	OnChange(colour: string | cpRGBA | cpHSL): boolean {
+		const newColour = new Colour();
+		if (typeof colour === 'string') {
+			if (!newColour.SetHex(colour)) {
+				return false;
+			}
+
+			this.UpdateHexInput(colour as string);
+			this.UpdateRGBAInput(newColour.GetRGBA());
+			this.UpdateColourField(newColour.GetHSL(), newColour.ToCssString());
+		} else if (colour.hasOwnProperty('R')) {
+			newColour.SetRGBA(colour as cpRGBA);
+			this.UpdateHexInput(newColour.GetHex());
+			this.UpdateRGBAInput(colour as cpRGBA);
+			this.UpdateColourField(newColour.GetHSL(), newColour.ToCssString());
+		} else if (colour.hasOwnProperty('H')) {
+			newColour.SetHSL(colour as cpHSL);
+			this.UpdateHexInput(newColour.GetHex());
+			this.UpdateRGBAInput(newColour.GetRGBA());
+			this.UpdateColourField(colour as cpHSL, newColour.ToCssString());
+		}
 
 		this.onChange(newColour);
-	}
-
-	OnRGBAChange(rgba: cpRGBA): void {
-
-	}
-
-	OnHSLChange(hsl: cpHSL): void {
-
+		return true;
 	}
 
 	UpdateHexInput(hex: string): void {
@@ -208,13 +218,17 @@ class ColourPicker {
 		this.redInput.value = rgba.R.toString();
 		this.greenInput.value = rgba.G.toString();
 		this.blueInput.value = rgba.B.toString();
-		this.alphaInput.value = rgba.A.toString();
+
+		if (this.alphaInput != null) {
+			this.alphaInput.value = rgba.A.toString();
+		}
 	}
 
-	UpdateColourField(hsl: cpHSL): void {
+	UpdateColourField(hsl: cpHSL, cssString: string): void {
 		this.hueSliderHandle.style.left = (hsl.H * 100) + '%';
-		this.colourFieldMarker.style.left = (hsl.S * 100) + '%';
-		this.colourFieldMarker.style.bottom = (hsl.L * 100) + '%';
+		this.colourFieldMarker.style.left = 'calc(' + (hsl.S * 100) + '% - 4px)';
+		this.colourFieldMarker.style.bottom = 'calc(' + (hsl.L * 100) + '% - 4px)';
+		this.colourFieldMarker.style.backgroundColor = cssString;
 	}
 }
 
@@ -255,28 +269,31 @@ class Colour {
 		this.A = rgba.A;
 	}
 
-	public SetHex(hex: string): void {
+	public SetHex(hex: string): boolean {
 		if (hex.length === 0) {
-			throw Error('Empty string passed to SetHex');
+			return false;
 		}
 
 		if (hex[0] === '#') {
 			hex = hex.substring(1);
 		}
 
-		if(hex.length === 3 || hex.length === 4) {
-			this.R = parseInt(hex[0], 8);
-			this.G = parseInt(hex[1], 8);
-			this.B = parseInt(hex[2], 8);
-			this.A = hex.length === 4 ? parseInt(hex[4], 8) : 255;			
-		} else if (hex.length === 6 || hex.length === 8) {
-			this.R = parseInt(hex.substr(0, 2), 8);
-			this.G = parseInt(hex.substr(2, 2), 8);
-			this.B = parseInt(hex.substr(4, 2), 8);
-			this.A = hex.length === 8 ? parseInt(hex.substr(6, 2)) : 255;	
-		} else {
-			throw Error(`ColourPicker: SetHex paramater's length is ${hex.length}`);
+		if(hex.length === 3) {
+			hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+		} else if (hex.length === 4) {
+			hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];			
 		}
+		
+		if (hex.length === 6 || hex.length === 8) {
+			this.R = parseInt(hex.substr(0, 2), 16);
+			this.G = parseInt(hex.substr(2, 2), 16);
+			this.B = parseInt(hex.substr(4, 2), 16);
+			this.A = hex.length === 8 ? parseInt(hex.substr(6, 2), 16) : 255;	
+		} else {
+			return false;
+		}
+		
+		return true;
 	}
 
 	public SetHSL(hsl: cpHSL): void {
@@ -287,7 +304,7 @@ class Colour {
 		this.B = Math.round(this.HueToRGB(p, q, hsl.H - 1/3));
 	}
 
-	public ToString(includeAlpha = false): string {
+	public ToCssString(includeAlpha = false): string {
 		let str = includeAlpha ? 'rgba(' : 'rgb(';
 		str += this.R + ', ' + this.G + ', ' + this.B;
 		str += includeAlpha ? ', ' + this.A + ')' : ')';
@@ -308,7 +325,7 @@ class Colour {
 		const r = this.R / 255;
 		const g = this.G / 255;
 		const b = this.B / 255;
-		let hsl = { H: 0, S: 0, L: 0 };
+		const hsl = { H: 0, S: 0, L: 0 };
 
 		const max = Math.max(r, g, b);
 		const min = Math.min(r, g, b);
@@ -343,13 +360,14 @@ class Colour {
 
 		if (t < 1/6) {
 			return p + (q - p) * 6 * t;
-		} else if (t < 1/2) {
-			return q;
-		} else if (t < 2/3) {
-			return p + (q - p) * 6 * (2/3 - t);
-		} else {
-			return p;
 		}
+		if (t < 1/2) {
+			return q;
+		}
+		if (t < 2/3) {
+			return p + (q - p) * 6 * (2/3 - t);
+		}
+		return p;
 	}
 }
 
