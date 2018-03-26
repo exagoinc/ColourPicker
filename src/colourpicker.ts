@@ -66,10 +66,7 @@ class ColourPicker {
 		const lightnessGradient = document.createElement('div');
 		lightnessGradient.classList.add('colour-field__lightness');
 		colourField.appendChild(lightnessGradient);
-		lightnessGradient.addEventListener('mousedown', () => { 
-			document.body.addEventListener('mousemove', this.ColourFieldMouseMove);
-			document.body.addEventListener('mouseup', this.ColourFieldMouseUp);
-		});
+		lightnessGradient.addEventListener('mousedown', this.ColourFieldMouseDown);
 
 		const fieldMarker = document.createElement('div');
 		fieldMarker.classList.add('colour-field__marker');
@@ -77,7 +74,7 @@ class ColourPicker {
 
 		return colourField;
 	}
-
+	
 	ColourFieldMouseMove(evt: MouseEvent): void {
 		const colourFieldBoundingBox = this.colourField.getBoundingClientRect();
 		const mouseX = Math.min(evt.pageX, colourFieldBoundingBox.left); 
@@ -96,6 +93,11 @@ class ColourPicker {
 		// Remove the mousemove event listener and itself
 		document.body.removeEventListener('mousemove', this.ColourFieldMouseMove);
 		document.body.removeEventListener('mouseup', this.ColourFieldMouseUp);
+	}
+
+	ColourFieldMouseDown(): void {
+		window.addEventListener('mousemove', this.ColourFieldMouseMove);
+		window.addEventListener('mouseup', this.ColourFieldMouseUp);
 	}
 
 	CreateHueSlider(): HTMLElement {
