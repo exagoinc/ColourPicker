@@ -37,12 +37,12 @@ class ColourPicker {
 
 		const docFragment = document.createDocumentFragment();
 		
-		this.colourField = this.CreateColourField();
-		this.colourFieldMarker = this.colourField.querySelector('.colour-field__marker');
+		this.CreateColourField();
+		this.colourFieldMarker = <HTMLElement>this.colourField.querySelector('.colour-field__marker');
 		docFragment.appendChild(this.colourField);
 
-		this.hueSlider = this.CreateHueSlider();
-		this.hueSliderHandle = this.hueSlider.querySelector('.hue-slider__handle');
+		this.CreateHueSlider();
+		this.hueSliderHandle = <HTMLElement>this.hueSlider.querySelector('.hue-slider__handle');
 		docFragment.appendChild(this.hueSlider);
 
 		const valueInputContainer = this.CreateValueInputs();
@@ -59,60 +59,74 @@ class ColourPicker {
 	 * Creates and returns a rectangular Colour Field, with a movable marker
 	 * and gradients representing lightness & saturation.
 	 */
-	CreateColourField(): HTMLElement {
-		const colourField = document.createElement('div');
-		colourField.classList.add('colour-field');
+	CreateColourField(): void {
+		this.colourField = document.createElement('div');
+		this.colourField.classList.add('colour-field');
 		
 		const lightnessGradient = document.createElement('div');
 		lightnessGradient.classList.add('colour-field__lightness');
-		colourField.appendChild(lightnessGradient);
-		lightnessGradient.addEventListener('mousedown', this.ColourFieldMouseDown);
+		this.colourField.appendChild(lightnessGradient);
+		lightnessGradient.addEventListener('mousedown', (evt) => { this.ColourFieldMouseDown(evt); });
 
 		const fieldMarker = document.createElement('div');
 		fieldMarker.classList.add('colour-field__marker');
-		colourField.appendChild(fieldMarker);
+		this.colourField.appendChild(fieldMarker);
+	}
+	
+	ColourFieldMouseDown(evt: MouseEvent): void {
+		this.colourField.style.cursor = 'none';
 
-		return colourField;
+		const colourFieldBoundingBox = this.colourField.getBoundingClientRect();
+		const mouseX = Math.min(evt.pageX, colourFieldBoundingBox.left);
+		const mouseY = Math.min(evt.pageY, colourFieldBoundingBox.top);
+
+		const newHSV = {
+			H: this.hueSliderHandle.offsetLeft / this.hueSlider.clientWidth,
+			S: (colourFieldBoundingBox.left - mouseX) / colourFieldBoundingBox.width,
+			V: (colourFieldBoundingBox.top - mouseY) / colourFieldBoundingBox.height,
+		};
+
+		this.OnChange(newHSV);
+
+		window.addEventListener('mousemove', (event: MouseEvent) => { this.ColourFieldMouseMove(<MouseEvent>event); });
+		window.addEventListener('mouseup', () => { this.ColourFieldMouseUp(); });
 	}
 	
 	ColourFieldMouseMove(evt: MouseEvent): void {
 		const colourFieldBoundingBox = this.colourField.getBoundingClientRect();
-		const mouseX = Math.min(evt.pageX, colourFieldBoundingBox.left); 
-		const mouseY = Math.min(evt.pageY, colourFieldBoundingBox.top); 
+		let mouseX = Math.max(evt.pageX, colourFieldBoundingBox.left); 
+		mouseX = Math.min(mouseX, colourFieldBoundingBox.right);
+		let mouseY = Math.max(evt.pageY, colourFieldBoundingBox.top); 
+		mouseY = Math.min(mouseY, colourFieldBoundingBox.bottom);
 
-		const newHSL = { 
+		const newHSV = { 
 			H: this.hueSliderHandle.offsetLeft / this.hueSlider.clientWidth,
-			S: colourFieldBoundingBox.width / (colourFieldBoundingBox.left - mouseX),
-			L: colourFieldBoundingBox.height / (colourFieldBoundingBox.top - mouseY),
+			S: (mouseX - colourFieldBoundingBox.left) / colourFieldBoundingBox.width,
+			V: (mouseY - colourFieldBoundingBox.top) / colourFieldBoundingBox.height,
 		};
 
-		this.OnChange(newHSL);
+		this.OnChange(newHSV);
 	}
 
 	ColourFieldMouseUp(): void {
-		// Remove the mousemove event listener and itself
-		document.body.removeEventListener('mousemove', this.ColourFieldMouseMove);
-		document.body.removeEventListener('mouseup', this.ColourFieldMouseUp);
+		this.colourField.style.cursor = 'default';
+
+        // Remove the mousemove event listener and itself
+		document.body.removeEventListener('mousemove', (evt) => { this.ColourFieldMouseMove(<MouseEvent>evt); });
+		document.body.removeEventListener('mouseup', () => { this.ColourFieldMouseUp(); });
 	}
 
-	ColourFieldMouseDown(): void {
-		window.addEventListener('mousemove', this.ColourFieldMouseMove);
-		window.addEventListener('mouseup', this.ColourFieldMouseUp);
-	}
-
-	CreateHueSlider(): HTMLElement {
-		const hueSlider = document.createElement('div');
-		hueSlider.classList.add('hue-slider');
+	CreateHueSlider(): void {
+		this.hueSlider = document.createElement('div');
+		this.hueSlider.classList.add('hue-slider');
 
 		const hueSliderGradient = document.createElement('div');
 		hueSliderGradient.classList.add('hue-slider__gradient');
-		hueSlider.appendChild(hueSliderGradient);
+		this.hueSlider.appendChild(hueSliderGradient);
 
 		const hueSliderHandle = document.createElement('div');
 		hueSliderHandle.classList.add('hue-slider__handle');
-		hueSlider.appendChild(hueSliderHandle);
-
-		return hueSlider;
+		this.hueSlider.appendChild(hueSliderHandle);
 	}
 
 	CreateValueInputs(): HTMLElement {
@@ -210,7 +224,7 @@ class ColourPicker {
 		return intInputContainer;
 	}
 
-	OnChange(colour: string | cpRGBA | cpHSL): boolean {
+	OnChange(colour: string | cpRGBA | cpHSV): boolean {
 		const newColour = new Colour();
 		if (typeof colour === 'string') {
 			if (!newColour.SetHex(colour)) {
@@ -219,17 +233,17 @@ class ColourPicker {
 
 			this.UpdateHexInput(colour as string);
 			this.UpdateRGBAInput(newColour.GetRGBA());
-			this.UpdateColourField(newColour.GetHSL(), newColour.ToCssString());
+			this.UpdateColourField(newColour.GetHSV(), newColour.ToCssString());
 		} else if (colour.hasOwnProperty('R')) {
 			newColour.SetRGBA(colour as cpRGBA);
 			this.UpdateHexInput(newColour.GetHex());
 			this.UpdateRGBAInput(colour as cpRGBA);
-			this.UpdateColourField(newColour.GetHSL(), newColour.ToCssString());
+			this.UpdateColourField(newColour.GetHSV(), newColour.ToCssString());
 		} else if (colour.hasOwnProperty('H')) {
-			newColour.SetHSL(colour as cpHSL);
+			newColour.SetHSV(colour as cpHSV);
 			this.UpdateHexInput(newColour.GetHex());
 			this.UpdateRGBAInput(newColour.GetRGBA());
-			this.UpdateColourField(colour as cpHSL, newColour.ToCssString());
+			this.UpdateColourField(colour as cpHSV, newColour.ToCssString());
 		}
 
 		this.onChange(newColour);
@@ -250,10 +264,10 @@ class ColourPicker {
 		}
 	}
 
-	UpdateColourField(hsl: cpHSL, cssString: string): void {
-		this.hueSliderHandle.style.left = (hsl.H * 100) + '%';
-		this.colourFieldMarker.style.left = 'calc(' + (hsl.S * 100) + '% - 4px)';
-		this.colourFieldMarker.style.bottom = 'calc(' + (hsl.L * 100) + '% - 4px)';
+	UpdateColourField(hsv: cpHSV, cssString: string): void {
+		this.hueSliderHandle.style.left = (hsv.H * 100) + '%';
+		this.colourFieldMarker.style.left = 'calc(' + (hsv.S * 100) + '% - 4px)';
+		this.colourFieldMarker.style.top = 'calc(' + (hsv.V * 100) + '% - 4px)';
 		this.colourFieldMarker.style.backgroundColor = cssString;
 	}
 }
@@ -276,14 +290,14 @@ class Colour {
 	private B: number = 255;
 	private A: number = 255;
 
-	constructor(colour?: string | cpRGBA | cpHSL) {
+	constructor(colour?: string | cpRGBA | cpHSV) {
 		if (colour != null) {
 			if (colour instanceof String) {
 				this.SetHex(colour as string);
 			} else if (colour.hasOwnProperty('R')) {
 				this.SetRGBA(colour as cpRGBA);
 			} else if (colour.hasOwnProperty('H')) {
-				this.SetHSL(colour as cpHSL);
+				this.SetHSV(colour as cpHSV);
 			}
 		}
 	}
@@ -322,12 +336,12 @@ class Colour {
 		return true;
 	}
 
-	public SetHSL(hsl: cpHSL): void {
-		const q = hsl.L < 1/2 ? hsl.L * (hsl.S + 1) : (hsl.L + hsl.S) - (hsl.L * hsl.S);
-		const p = hsl.L * 2 - q;
-		this.R = Math.round(this.HueToRGB(p, q, hsl.H + 1/3));
-		this.G = Math.round(this.HueToRGB(p, q, hsl.H));
-		this.B = Math.round(this.HueToRGB(p, q, hsl.H - 1/3));
+	public SetHSV(hsv: cpHSV): void {
+		const q = hsv.V < 1/2 ? hsv.V * (hsv.S + 1) : (hsv.V + hsv.S) - (hsv.V * hsv.S);
+		const p = hsv.V * 2 - q;
+		this.R = Math.round(this.HueToRGB(p, q, hsv.H + 1/3) * 255);
+		this.G = Math.round(this.HueToRGB(p, q, hsv.H) * 255);
+		this.B = Math.round(this.HueToRGB(p, q, hsv.H - 1/3) * 255);
 	}
 
 	public ToCssString(includeAlpha = false): string {
@@ -347,29 +361,29 @@ class Colour {
 		return hex;
 	}
 
-	public GetHSL(): cpHSL {
+	public GetHSV(): cpHSV {
 		const r = this.R / 255;
 		const g = this.G / 255;
 		const b = this.B / 255;
-		const hsl = { H: 0, S: 0, L: 0 };
+		const hsv = { H: 0, S: 0, V: 0 };
 
 		const max = Math.max(r, g, b);
 		const min = Math.min(r, g, b);
 		const delta = max - min;
 		
-		hsl.L = (max + min) / 2;
-		hsl.S = hsl.L > 1/2 ? delta / (2 - delta) : delta / (max + min);
+		hsv.V = (max + min) / 2;
+		hsv.S = hsv.V > 1/2 ? delta / (2 - delta) : delta / (max + min);
 		
 		if (r === max) {
-			hsl.H = (g - b) / delta + (g < b ? 6 : 0);
+			hsv.H = (g - b) / delta + (g < b ? 6 : 0);
 		} else if (g === max) {
-			hsl.H = (b - r) / delta + 2;
+			hsv.H = (b - r) / delta + 2;
 		} else if (b === max) {
-			hsl.H = (b - r) / delta + 4;
+			hsv.H = (b - r) / delta + 4;
 		}
-		hsl.H = hsl.H / 6;
+		hsv.H = hsv.H / 6;
 
-		return hsl;
+		return hsv;
 	}
 
 	private DecimalToHex(decimal: number) {
@@ -404,10 +418,10 @@ interface cpRGBA {
 	A: number;
 }
 
-interface cpHSL {
+interface cpHSV {
 	H: number;
 	S: number;
-	L: number;
+	V: number;
 }
 
 enum cpEnumRGBA {
