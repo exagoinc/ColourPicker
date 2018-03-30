@@ -40,7 +40,7 @@
     const colourPickerElem = document.getElementById("colour-picker-example");
 
     const colourPickerOptions = new ColourPickerOptions();
-    colourPickerOptions.showAlpha = true;
+    colourPickerOptions.showAlphaControl = true;
     const colourPicker = new ColourPicker(colourPickerElem, (rgba) => {
         contentElem.style.backgroundColor = `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
     }, colourPickerOptions);
