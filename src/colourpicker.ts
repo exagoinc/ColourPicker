@@ -29,13 +29,12 @@ class ColourPicker {
 		this.onChange = onChange;
 		this.options = options;
 
-		if (this.container == null) {
+		if (this.container == null)
 			throw new Error('Colour Picker Error: specified container is null.');
-		}
-		if (this.onChange == null) {
+		
+		if (this.onChange == null)
 			throw new Error('Colour Picker Error: specified onChange callback is null.');
-		}
-
+		
 		const docFragment = document.createDocumentFragment();
 		
 		this.CreateColourField();
@@ -88,6 +87,8 @@ class ColourPicker {
 		const mouseMoveCallback = (event: MouseEvent) => { 
 			const newHSV = this.SetColourFieldHSV(event);
 			this.OnChange(newHSV);
+
+			event.preventDefault();
 		};
 		const mouseUpCallback = () => { 
 			this.colourField.style.cursor = 'default';
@@ -96,6 +97,8 @@ class ColourPicker {
 		};
 		window.addEventListener('mousemove', mouseMoveCallback);
 		window.addEventListener('mouseup', mouseUpCallback);
+		
+		evt.preventDefault();		
 	}
 
 	GetColourFieldHSV(x: number, y: number): cpHSV {
@@ -150,6 +153,8 @@ class ColourPicker {
 			const newMarkerY = this.colourFieldMarker.offsetTop + 5;
 			const newHSV = this.GetColourFieldHSV(newMarkerX, newMarkerY);
 			this.OnChange(newHSV);
+
+			event.preventDefault();			
 		};
 		const mouseUpCallback = () => { 
 			window.removeEventListener('mousemove', mouseMoveCallback);
@@ -157,6 +162,8 @@ class ColourPicker {
 		};
 		window.addEventListener('mousemove', mouseMoveCallback);
 		window.addEventListener('mouseup', mouseUpCallback);
+
+		evt.preventDefault();
 	}
 
 	UpdateHueSliderHandle(evt: MouseEvent) {
@@ -220,8 +227,8 @@ class ColourPicker {
 		let b = Math.round(parseInt(this.blueInput.value, 10));
 		b = Math.max(Math.min(b, 255), 0);
 
-		let a = Math.round(this.alphaInput != null ? parseInt(this.alphaInput.value, 10) : 255);
-		a = Math.max(Math.min(a, 255), 0);
+		let a = Math.round(this.alphaInput != null ? parseInt(this.alphaInput.value, 10) : 100);
+		a = Math.max(Math.min(a, 100), 0);
 		
 		return { R: r, G: g, B: b, A: a };
 	}
@@ -255,33 +262,31 @@ class ColourPicker {
 		intInputLbl.innerText = label;
 		intInputLbl.style.cursor = 'ew-resize';
 		intInputLbl.addEventListener('mousedown', (evt) => {
-			this.IntegerInputMouseDown(evt, inputType, intInput);
+			const maxValue = inputType === cpEnumRGBA.Alpha ? 100 : 255;
+			this.IntegerInputMouseDown(evt, intInput, maxValue);
 		});
 		intInputContainer.appendChild(intInputLbl);
 
 		return intInputContainer;
 	}
 
-	IntegerInputMouseDown(evt: MouseEvent, inputType: cpEnumRGBA, intInput: HTMLInputElement): void {
+	IntegerInputMouseDown(evt: MouseEvent, intInput: HTMLInputElement, maxValue: number): void {
 		const baseInt = parseInt(intInput.value, 10);
 		const baseX = evt.clientX;
 
 		const mouseMoveCallback = (event: MouseEvent) => { 
 			const intChange = Math.floor((event.clientX - baseX) / 2);
-			const newValue = Math.max(Math.min(baseInt + intChange, 255), 0);
-			switch (inputType) {
-				case cpEnumRGBA.Red: this.redInput.value = newValue.toString(); break;
-				case cpEnumRGBA.Green: this.greenInput.value = newValue.toString(); break;
-				case cpEnumRGBA.Blue: this.blueInput.value = newValue.toString(); break;
-				case cpEnumRGBA.Alpha: this.alphaInput.value = newValue.toString(); break;
-				default: break;
-			}
+			const newValue = Math.max(Math.min(baseInt + intChange, maxValue), 0);
+			intInput.value = newValue.toString();
+
 			this.OnChange({
 				R: parseInt(this.redInput.value, 10),
 				G: parseInt(this.greenInput.value, 10),
 				B: parseInt(this.blueInput.value, 10),
 				A: this.alphaInput != null ? parseInt(this.alphaInput.value, 10) : 255,
 			});
+			
+			event.preventDefault();
 		};
 		const mouseUpCallback = () => { 
 			window.removeEventListener('mousemove', mouseMoveCallback);
@@ -289,14 +294,18 @@ class ColourPicker {
 		};
 		window.addEventListener('mousemove', mouseMoveCallback);
 		window.addEventListener('mouseup', mouseUpCallback);
+
+		evt.preventDefault();		
 	}
 
 	OnChange(colour: string | cpRGBA | cpHSV): boolean {
 		const newColour = new Colour();
 		if (typeof colour === 'string') {
-			if (!newColour.SetHex(colour)) {
+			if (!newColour.SetHex(colour))
 				return false;
-			}
+
+			if (this.options.showAlphaControl)
+				newColour.SetAlpha(parseInt(this.alphaInput.value, 10));
 
 			this.UpdateHexInput(colour as string);
 			this.UpdateRGBAInput(newColour.GetRGBA());
@@ -308,6 +317,9 @@ class ColourPicker {
 			this.UpdateColourField(newColour.GetHSV(), newColour.ToCssString());
 		} else if (colour.hasOwnProperty('H')) {
 			newColour.SetHSV(colour as cpHSV);
+			if (this.options.showAlphaControl)
+				newColour.SetAlpha(parseInt(this.alphaInput.value, 10));
+
 			this.UpdateHexInput(newColour.GetHex());
 			this.UpdateRGBAInput(newColour.GetRGBA());
 			this.UpdateColourField(colour as cpHSV, newColour.ToCssString());
@@ -326,9 +338,8 @@ class ColourPicker {
 		this.greenInput.value = rgba.G.toString();
 		this.blueInput.value = rgba.B.toString();
 
-		if (this.alphaInput != null) {
+		if (this.alphaInput != null)
 			this.alphaInput.value = rgba.A.toString();
-		}
 	}
 
 	UpdateColourField(hsv: cpHSV, cssString: string): void {
@@ -343,7 +354,7 @@ class ColourPicker {
 }
 
 class ColourPickerOptions{
-	public initialColour: Colour = new Colour({ R: 255, G: 0, B: 0, A: 255 });
+	public initialColour: Colour = new Colour({ R: 255, G: 0, B: 0, A: 100 });
 	public showAlphaControl: boolean = false;
 
 	/** Labels that appear underneath input boxes */
@@ -358,17 +369,16 @@ class Colour {
 	private R: number = 255;
 	private G: number = 255;
 	private B: number = 255;
-	private A: number = 255;
+	private A: number = 100;
 
 	constructor(colour?: string | cpRGBA | cpHSV) {
 		if (colour != null) {
-			if (colour instanceof String) {
+			if (colour instanceof String) 
 				this.SetHex(colour as string);
-			} else if (colour.hasOwnProperty('R')) {
+			else if (colour.hasOwnProperty('R'))
 				this.SetRGBA(colour as cpRGBA);
-			} else if (colour.hasOwnProperty('H')) {
+			else if (colour.hasOwnProperty('H'))
 				this.SetHSV(colour as cpHSV);
-			}
 		}
 	}
 
@@ -379,20 +389,21 @@ class Colour {
 		this.A = rgba.A;
 	}
 
+	SetAlpha(alpha: number) {
+		this.A = alpha;
+	}
+
 	public SetHex(hex: string): boolean {
-		if (hex.length === 0) {
+		if (hex.length === 0)
 			return false;
-		}
 
-		if (hex[0] === '#') {
+		if (hex[0] === '#')
 			hex = hex.substring(1);
-		}
 
-		if(hex.length === 3) {
+		if(hex.length === 3)
 			hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-		} else if (hex.length === 4) {
+		else if (hex.length === 4)
 			hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];			
-		}
 		
 		if (hex.length === 6 || hex.length === 8) {
 			this.R = parseInt(hex.substr(0, 2), 16);
@@ -414,11 +425,11 @@ class Colour {
 		p = Math.round(p * 255);
 
 		let q = hsv.V;
-		if (hueSector % 2 === 0) { // hueSector is even
+		if (hueSector % 2 === 0) // hueSector is even
  			q *= (1 - (1 - hueSectorOffset) * hsv.S);
-		} else { // hueSector is odd
+		else // hueSector is odd
 			q *= 1 - hueSectorOffset * hsv.S;
-		}
+		
 		q = Math.round(q * 255);
 
 		const v = Math.round(hsv.V * 255);
@@ -438,7 +449,7 @@ class Colour {
 	public ToCssString(includeAlpha = false): string {
 		let str = includeAlpha ? 'rgba(' : 'rgb(';
 		str += this.R + ', ' + this.G + ', ' + this.B;
-		str += includeAlpha ? ', ' + this.A + ')' : ')';
+		str += includeAlpha ? ', ' + this.A + '%)' : ')';
 		return str;
 	}
 
@@ -448,7 +459,7 @@ class Colour {
 	
 	public GetHex(includeAlpha = false): string {
 		let hex = '' + this.DecimalToHex(this.R) + this.DecimalToHex(this.G) + this.DecimalToHex(this.B);
-		hex += includeAlpha ? this.DecimalToHex(this.A) : '';
+		hex += includeAlpha ? this.DecimalToHex(this.A * 2.55) : '';
 		return hex;
 	}
 
@@ -471,7 +482,7 @@ class Colour {
 		} else if (g === max) {
 			hsv.H = (b - r) / delta + 2;
 		} else if (b === max) {
-			hsv.H = (b - r) / delta + 4;
+			hsv.H = (r - g) / delta + 4;
 		}
 		hsv.H = hsv.H / 6;
 
