@@ -36,13 +36,12 @@
 </body>
 
 <script type="text/javascript">
-    const contentElem = document.getElementById("content");
-    const colourPickerElem = document.getElementById("colour-picker-example");
-
-    const colourPickerOptions = new ColourPickerOptions();
+    var contentElem = document.getElementById("content");
+    var colourPickerElem = document.getElementById("colour-picker-example");
+    var colourPickerOptions = new ColourPickerOptions();
     colourPickerOptions.showAlphaControl = true;
-    const colourPicker = new ColourPicker(colourPickerElem, (rgba) => {
-        contentElem.style.backgroundColor = `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+    var colourPicker = new ColourPicker(colourPickerElem, function (rgba) {
+        contentElem.style.backgroundColor = "rgba(" + rgba.R + ", " + rgba.G + ", " + rgba.B + ", " + rgba.A + "%)";
     }, colourPickerOptions);
 </script>
 </html>
