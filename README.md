@@ -1,12 +1,16 @@
 # ColourPicker
 A pure TypeScript colour picker.
 
-## How to build
-* Install TypeScript  
-	`npm install -g typescript`
-
+## To build
 * Install dependencies  
 	`npm install`
 
-* Compile TypeScript  
-	`tsc`
+* Build
+	`npm run build`
+
+## To develop
+* Install dependencies  
+	`npm install`
+
+* Build whenever a file changes
+	`npm run test`
