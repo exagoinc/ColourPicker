@@ -60,11 +60,15 @@ class ColourPicker {
 		this.UpdateColourField(initialColour.GetHSV(), initialColour.ToCssString());
 	}
 
+	public GetColour(): Colour {
+		return new Colour(this.GetRGBAFromInputs());
+	}
+
 	/** 
 	 * Creates and returns a rectangular Colour Field, with a movable marker
 	 * and gradients representing lightness & saturation.
 	 */
-	CreateColourField(): void {
+	private CreateColourField(): void {
 		this.colourField = document.createElement('div');
 		this.colourField.classList.add('colour-field');
 		
@@ -78,7 +82,7 @@ class ColourPicker {
 		this.colourField.appendChild(fieldMarker);
 	}
 	
-	ColourFieldMouseDown(evt: MouseEvent): void {
+	private ColourFieldMouseDown(evt: MouseEvent): void {
 		this.colourField.style.cursor = 'none';
 
 		const hsv = this.SetColourFieldHSV(evt);
@@ -101,7 +105,7 @@ class ColourPicker {
 		evt.preventDefault();		
 	}
 
-	GetColourFieldHSV(x: number, y: number): cpHSV {
+	private GetColourFieldHSV(x: number, y: number): cpHSV {
 		const colourFieldBoundingBox = this.colourField.getBoundingClientRect();
 		return { 
 			H: this.hueSliderHandle.offsetLeft / this.hueSlider.clientWidth,
@@ -110,7 +114,7 @@ class ColourPicker {
 		};
 	}
 
-	SetColourFieldHSV(evt: MouseEvent): cpHSV {
+	private SetColourFieldHSV(evt: MouseEvent): cpHSV {
 		const colourFieldBoundingBox = this.colourField.getBoundingClientRect();
 		let mouseX = Math.max(evt.clientX, colourFieldBoundingBox.left); 
 		mouseX = Math.min(mouseX, colourFieldBoundingBox.right);
@@ -122,7 +126,7 @@ class ColourPicker {
 		return this.GetColourFieldHSV(colourFieldX, colourFieldY);
 	}
 
-	CreateHueSlider(): void {
+	private CreateHueSlider(): void {
 		this.hueSlider = document.createElement('div');
 		this.hueSlider.classList.add('hue-slider');
 
@@ -136,7 +140,7 @@ class ColourPicker {
 		this.hueSlider.appendChild(hueSliderHandle);
 	}
 
-	HueSliderMouseDown (evt: MouseEvent): void {
+	private HueSliderMouseDown (evt: MouseEvent): void {
 		this.UpdateHueSliderHandle(evt);
 
 		const markerX = this.colourFieldMarker.offsetLeft + 5;
@@ -166,7 +170,7 @@ class ColourPicker {
 		evt.preventDefault();
 	}
 
-	UpdateHueSliderHandle(evt: MouseEvent) {
+	private UpdateHueSliderHandle(evt: MouseEvent) {
 		const hueSliderBoundingBox = this.hueSlider.getBoundingClientRect();
 		let mouseX = Math.max(evt.clientX, hueSliderBoundingBox.left); 
 		mouseX = Math.min(mouseX, hueSliderBoundingBox.right);
@@ -174,7 +178,7 @@ class ColourPicker {
 		this.hueSliderHandle.style.left = mouseX - hueSliderBoundingBox.left + 'px';
 	}
 
-	CreateValueInputs(): HTMLElement {
+	private CreateValueInputs(): HTMLElement {
 		const valueInputContainer = document.createElement('div');
 		valueInputContainer.classList.add('colour-inputs');
 
@@ -217,7 +221,7 @@ class ColourPicker {
 		return valueInputContainer;
 	}
 
-	GetRGBAFromInputs(): cpRGBA {
+	private GetRGBAFromInputs(): cpRGBA {
 		let r = Math.round(parseInt(this.redInput.value, 10));
 		r = Math.max(Math.min(r, 255), 0);
 
@@ -233,7 +237,7 @@ class ColourPicker {
 		return { R: r, G: g, B: b, A: a };
 	}
 	
-	CreateHexInput(): HTMLElement {
+	private CreateHexInput(): HTMLElement {
 		const hexInputContainer = document.createElement('div'); 
 		hexInputContainer.classList.add('colour-input');
 
@@ -249,7 +253,7 @@ class ColourPicker {
 		return hexInputContainer;
 	}
 
-	CreateIntegerInput(inputType: cpEnumRGBA, label: string): HTMLElement {
+	private CreateIntegerInput(inputType: cpEnumRGBA, label: string): HTMLElement {
 		const intInputContainer = document.createElement('div'); 
 		intInputContainer.classList.add('colour-input');
 
@@ -270,7 +274,7 @@ class ColourPicker {
 		return intInputContainer;
 	}
 
-	IntegerInputMouseDown(evt: MouseEvent, intInput: HTMLInputElement, maxValue: number): void {
+	private IntegerInputMouseDown(evt: MouseEvent, intInput: HTMLInputElement, maxValue: number): void {
 		const baseInt = parseInt(intInput.value, 10);
 		const baseX = evt.clientX;
 
@@ -298,7 +302,7 @@ class ColourPicker {
 		evt.preventDefault();		
 	}
 
-	OnChange(colour: string | cpRGBA | cpHSV): boolean {
+	private OnChange(colour: string | cpRGBA | cpHSV): boolean {
 		const newColour = new Colour();
 		if (typeof colour === 'string') {
 			if (!newColour.SetHex(colour))
@@ -329,11 +333,11 @@ class ColourPicker {
 		return true;
 	}
 
-	UpdateHexInput(hex: string): void {
+	private UpdateHexInput(hex: string): void {
 		this.hexInput.value = hex;
 	}
 
-	UpdateRGBAInput(rgba: cpRGBA): void {
+	private UpdateRGBAInput(rgba: cpRGBA): void {
 		this.redInput.value = rgba.R.toString();
 		this.greenInput.value = rgba.G.toString();
 		this.blueInput.value = rgba.B.toString();
@@ -342,7 +346,7 @@ class ColourPicker {
 			this.alphaInput.value = rgba.A.toString();
 	}
 
-	UpdateColourField(hsv: cpHSV, cssString: string): void {
+	private UpdateColourField(hsv: cpHSV, cssString: string): void {
 		this.hueSliderHandle.style.left = (hsv.H * 100) + '%';
 		this.colourFieldMarker.style.left = 'calc(' + (hsv.S * 100) + '% - 5px)';
 		this.colourFieldMarker.style.bottom = 'calc(' + (hsv.V * 100) + '% - 5px)';
@@ -389,7 +393,7 @@ class Colour {
 		this.A = rgba.A;
 	}
 
-	SetAlpha(alpha: number) {
+	public SetAlpha(alpha: number) {
 		this.A = alpha;
 	}
 
