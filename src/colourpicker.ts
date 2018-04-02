@@ -143,8 +143,8 @@ class ColourPicker {
 	private HueSliderMouseDown (evt: MouseEvent): void {
 		this.UpdateHueSliderHandle(evt);
 
-		const markerX = this.colourFieldMarker.offsetLeft + 5;
-		const markerY = this.colourFieldMarker.offsetTop + 5;
+		const markerX = this.colourFieldMarker.offsetLeft + this.colourFieldMarker.offsetWidth / 2;
+		const markerY = this.colourFieldMarker.offsetTop + this.colourFieldMarker.offsetHeight / 2;
 		const hsv = this.GetColourFieldHSV(markerX, markerY);
 		this.OnChange(hsv);
 
@@ -153,8 +153,8 @@ class ColourPicker {
 		const mouseMoveCallback = (event: MouseEvent) => { 
 			this.UpdateHueSliderHandle(event);
 
-			const newMarkerX = this.colourFieldMarker.offsetLeft + 5;
-			const newMarkerY = this.colourFieldMarker.offsetTop + 5;
+			const newMarkerX = this.colourFieldMarker.offsetLeft + this.colourFieldMarker.offsetWidth / 2;
+			const newMarkerY = this.colourFieldMarker.offsetTop + this.colourFieldMarker.offsetHeight / 2;
 			const newHSV = this.GetColourFieldHSV(newMarkerX, newMarkerY);
 			this.OnChange(newHSV);
 
@@ -347,11 +347,12 @@ class ColourPicker {
 	}
 
 	private UpdateColourField(hsv: cpHSV, cssString: string): void {
-		this.hueSliderHandle.style.left = (hsv.H * 100) + '%';
-		this.colourFieldMarker.style.left = 'calc(' + (hsv.S * 100) + '% - 5px)';
-		this.colourFieldMarker.style.bottom = 'calc(' + (hsv.V * 100) + '% - 5px)';
+		const markerBoundingBox = this.colourFieldMarker.getBoundingClientRect();
+		this.colourFieldMarker.style.left = `calc(${(hsv.S * 100)}% - ${markerBoundingBox.width / 2}px)`;
+		this.colourFieldMarker.style.bottom = `calc(${(hsv.V * 100)}% - ${markerBoundingBox.height / 2}px)`;
 		this.colourFieldMarker.style.backgroundColor = cssString;
 		
+		this.hueSliderHandle.style.left = (hsv.H * 100) + '%';
 		const hueHex = new Colour({ H: hsv.H, S: 1, V: 1 }).GetHex();
 		this.colourField.style.background = `linear-gradient(to right, #FFF, #${hueHex})`;
 	}
