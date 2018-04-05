@@ -407,7 +407,7 @@ class Colour {
 
 	constructor(colour?: string | cpRGBA | cpHSV) {
 		if (colour != null) {
-			if (colour instanceof String) 
+			if (colour instanceof String || typeof colour === 'string') 
 				this.SetHex(colour as string);
 			else if (colour.hasOwnProperty('R'))
 				this.SetRGBA(colour as cpRGBA);
