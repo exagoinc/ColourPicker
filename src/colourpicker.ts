@@ -184,28 +184,35 @@ class ColourPicker {
 
 		const hexInputItem = this.CreateHexInput();
 		valueInputContainer.appendChild(hexInputItem);
-		this.hexInput.addEventListener('change', () => {
-			this.OnChange(this.hexInput.value);
+		this.hexInput.addEventListener('keyup', () => {
+			let strippedValue = this.hexInput.value.replace(/[^0-9ABCDEF]/gi, '');
+			strippedValue = '#' + strippedValue.substr(0, 8); // Max length of 8 characters without #
+
+			this.hexInput.value = strippedValue;
+			this.OnChange(strippedValue);
 		});
 
 		const rInputItem = this.CreateIntegerInput(cpEnumRGBA.Red, this.options.redInputLabel);
 		this.redInput = rInputItem.querySelector('input');
 		valueInputContainer.appendChild(rInputItem);
-		this.redInput.addEventListener('change', () => {
+		this.redInput.addEventListener('keyup', () => {
+			this.redInput.value = this.redInput.value.replace(/[^0-9]/g, '');
 			this.OnChange(this.GetRGBAFromInputs());
 		});
 
 		const gInputItem = this.CreateIntegerInput(cpEnumRGBA.Green, this.options.greenInputLabel);
 		this.greenInput = gInputItem.querySelector('input');
 		valueInputContainer.appendChild(gInputItem);
-		this.greenInput.addEventListener('change', () => {
+		this.greenInput.addEventListener('keyup', () => {
+			this.greenInput.value = this.greenInput.value.replace(/[^0-9]/g, '');
 			this.OnChange(this.GetRGBAFromInputs());
 		});
 
 		const bInputItem = this.CreateIntegerInput(cpEnumRGBA.Blue, this.options.blueInputLabel);
 		this.blueInput = bInputItem.querySelector('input');
 		valueInputContainer.appendChild(bInputItem);
-		this.blueInput.addEventListener('change', () => {
+		this.blueInput.addEventListener('keyup', () => {
+			this.blueInput.value = this.blueInput.value.replace(/[^0-9]/g, '');
 			this.OnChange(this.GetRGBAFromInputs());
 		});
 
@@ -213,8 +220,9 @@ class ColourPicker {
 			const aInputItem = this.CreateIntegerInput(cpEnumRGBA.Alpha, this.options.alphaInputLabel);
 			this.alphaInput = aInputItem.querySelector('input');
 			valueInputContainer.appendChild(aInputItem);
-			this.alphaInput.addEventListener('change', () => {
-				this.OnChange(this.GetRGBAFromInputs());
+			this.alphaInput.addEventListener('keypress', () => {
+			this.alphaInput.value = this.alphaInput.value.replace(/[^0-9]/g, '');
+			this.OnChange(this.GetRGBAFromInputs());
 			});
 		}
 
@@ -234,6 +242,9 @@ class ColourPicker {
 		let a = Math.round(this.alphaInput != null ? parseInt(this.alphaInput.value, 10) : 100);
 		a = Math.max(Math.min(a, 100), 0);
 		
+		if (isNaN(r) || isNaN(g) || isNaN(b) || isNaN(a))
+			return null;
+
 		return { R: r, G: g, B: b, A: a };
 	}
 	
@@ -243,6 +254,7 @@ class ColourPicker {
 
 		this.hexInput = document.createElement('input'); 
 		this.hexInput.classList.add('colour-input__hex');
+		this.hexInput.setAttribute("spellcheck", "false");
 		hexInputContainer.appendChild(this.hexInput);
 
 		const hexInputLbl = document.createElement('span'); 
@@ -287,7 +299,7 @@ class ColourPicker {
 				R: parseInt(this.redInput.value, 10),
 				G: parseInt(this.greenInput.value, 10),
 				B: parseInt(this.blueInput.value, 10),
-				A: this.alphaInput != null ? parseInt(this.alphaInput.value, 10) : 255,
+				A: this.alphaInput != null ? parseInt(this.alphaInput.value, 10) : 100,
 			});
 			
 			event.preventDefault();
@@ -303,15 +315,18 @@ class ColourPicker {
 	}
 
 	private OnChange(colour: string | cpRGBA | cpHSV): boolean {
+		if (colour == null)
+			return false;
+		
 		const newColour = new Colour();
 		if (typeof colour === 'string') {
 			if (!newColour.SetHex(colour))
 				return false;
 
-			if (this.options.showAlphaControl)
+			if (this.options.showAlphaControl && newColour.GetRGBA().A === null)
 				newColour.SetAlpha(parseInt(this.alphaInput.value, 10));
 
-			this.UpdateHexInput(colour as string);
+			this.UpdateHexInput(colour);
 			this.UpdateRGBAInput(newColour.GetRGBA());
 			this.UpdateColourField(newColour.GetHSV(), newColour.ToCssString());
 		} else if (colour.hasOwnProperty('R')) {
@@ -354,7 +369,7 @@ class ColourPicker {
 		
 		this.hueSliderHandle.style.left = (hsv.H * 100) + '%';
 		const hueHex = new Colour({ H: hsv.H, S: 1, V: 1 }).GetHex();
-		this.colourField.style.background = `linear-gradient(to right, #FFF, #${hueHex})`;
+		this.colourField.style.background = `linear-gradient(to right, #FFF, ${hueHex})`;
 	}
 }
 
@@ -407,14 +422,19 @@ class Colour {
 
 		if(hex.length === 3)
 			hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-		else if (hex.length === 4)
-			hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];			
 		
 		if (hex.length === 6 || hex.length === 8) {
 			this.R = parseInt(hex.substr(0, 2), 16);
 			this.G = parseInt(hex.substr(2, 2), 16);
 			this.B = parseInt(hex.substr(4, 2), 16);
-			this.A = hex.length === 8 ? parseInt(hex.substr(6, 2), 16) : 255;	
+			// Set alpha to null if a 3 or 6 digit hex string, so that it can be grabbed from the 
+			// alpha input or set to 100
+			if (hex.length === 8) {
+				const parsedInt = parseInt(hex.substr(6, 2), 16);
+				this.A = Math.round(parsedInt / 2.55);	
+			} else {
+				this.A = null;
+			}
 		} else {
 			return false;
 		}
@@ -463,7 +483,7 @@ class Colour {
 	}
 	
 	public GetHex(includeAlpha = false): string {
-		let hex = '' + this.DecimalToHex(this.R) + this.DecimalToHex(this.G) + this.DecimalToHex(this.B);
+		let hex = '#' + this.DecimalToHex(this.R) + this.DecimalToHex(this.G) + this.DecimalToHex(this.B);
 		hex += includeAlpha ? this.DecimalToHex(this.A * 2.55) : '';
 		return hex;
 	}
