@@ -57,7 +57,11 @@ class ColourPicker {
 		const initialColour = this.options.initialColour;
 		this.UpdateHexInput(initialColour.GetHex());
 		this.UpdateRGBAInput(initialColour.GetRGBA());
-		this.UpdateColourField(initialColour.GetHSV(), initialColour.ToCssString());
+
+		// Wait for first paint to update the colour field, because the marker's height/width is needed
+		window.setTimeout(() => {
+			this.UpdateColourField(initialColour.GetHSV(), initialColour.ToCssString());
+		}, 0);
 	}
 
 	public GetColour(): Colour {
