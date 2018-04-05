@@ -7,7 +7,7 @@
 @marker-size: 10px;
 
 .colour-picker {
-	width: 200px;
+	width: 220px;
 	padding: 6px;
 	display: flex;
 	flex-flow: column;
@@ -23,7 +23,7 @@
 .colour-field {
 	position: relative;
 	width: 100%;
-	height: 170px;
+	height: 200px;
 	background: linear-gradient(to right, #FFF, #F00);
 
 	.colour-field__lightness {
@@ -87,18 +87,20 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	color: #444;
 
 	& > input {
 		width: 30px;
 		font-size: 12px;
 		text-align: center;
+		color: inherit;
 		border: 1px solid rgba(200, 200, 200, 0.5);
 		border-radius: 2px;
 		-webkit-appearance: none;
 	}
 
 	.colour-input__hex {
-		width: 60px;
+		width: 70px;
 	}
 
 	.colour-input__lbl {
