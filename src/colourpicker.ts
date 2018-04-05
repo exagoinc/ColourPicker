@@ -68,6 +68,10 @@ class ColourPicker {
 		return new Colour(this.GetRGBAFromInputs());
 	}
 
+	public SetInitialColour(colour: Colour): void {
+		this.options.initialColour = colour;
+	}
+
 	/** 
 	 * Creates and returns a rectangular Colour Field, with a movable marker
 	 * and gradients representing lightness & saturation.
