@@ -68,8 +68,14 @@ class ColourPicker {
 		return new Colour(this.GetRGBAFromInputs());
 	}
 
-	public SetInitialColour(colour: Colour): void {
-		this.options.initialColour = colour;
+	public SetColour(colour: Colour): void {
+		this.UpdateHexInput(colour.GetHex());
+		this.UpdateRGBAInput(colour.GetRGBA());
+
+		// Wait for first paint to update the colour field, because the marker's height/width is needed
+		window.setTimeout(() => {
+			this.UpdateColourField(colour.GetHSV(), colour.ToCssString());
+		}, 0);
 	}
 
 	/** 
