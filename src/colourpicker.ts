@@ -234,7 +234,7 @@ class ColourPicker {
 			const aInputItem = this.CreateIntegerInput(cpEnumRGBA.Alpha, this.options.alphaInputLabel);
 			this.alphaInput = aInputItem.querySelector('input');
 			valueInputContainer.appendChild(aInputItem);
-			this.alphaInput.addEventListener('keypress', () => {
+			this.alphaInput.addEventListener('keyup', () => {
 			this.alphaInput.value = this.alphaInput.value.replace(/[^0-9]/g, '');
 			this.OnChange(this.GetRGBAFromInputs());
 			});
