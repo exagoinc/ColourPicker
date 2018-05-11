@@ -198,45 +198,54 @@ class ColourPicker {
 
 		const hexInputItem = this.CreateHexInput();
 		valueInputContainer.appendChild(hexInputItem);
-		this.hexInput.addEventListener('keyup', () => {
-			let strippedValue = this.hexInput.value.replace(/[^0-9ABCDEF]/gi, '');
-			strippedValue = '#' + strippedValue.substr(0, 8); // Max length of 8 characters without #
-
-			this.hexInput.value = strippedValue;
-			this.OnChange(strippedValue);
+		this.hexInput.addEventListener('keypress', () => {
+			requestAnimationFrame(() => {
+				let strippedValue = this.hexInput.value.replace(/[^0-9ABCDEF]/gi, '');
+				strippedValue = '#' + strippedValue.substr(0, 8); // Max length of 8 characters without #
+				this.hexInput.value = strippedValue;
+				this.OnChange(strippedValue);
+			});
 		});
 
 		const rInputItem = this.CreateIntegerInput(cpEnumRGBA.Red, this.options.redInputLabel);
 		this.redInput = rInputItem.querySelector('input');
 		valueInputContainer.appendChild(rInputItem);
-		this.redInput.addEventListener('keyup', () => {
-			this.redInput.value = this.redInput.value.replace(/[^0-9]/g, '');
-			this.OnChange(this.GetRGBAFromInputs());
+		this.redInput.addEventListener('keypress', () => {
+			requestAnimationFrame(() => {
+				this.redInput.value = this.redInput.value.replace(/[^0-9]/g, '');
+				this.OnChange(this.GetRGBAFromInputs());
+			});
 		});
 
 		const gInputItem = this.CreateIntegerInput(cpEnumRGBA.Green, this.options.greenInputLabel);
 		this.greenInput = gInputItem.querySelector('input');
 		valueInputContainer.appendChild(gInputItem);
-		this.greenInput.addEventListener('keyup', () => {
-			this.greenInput.value = this.greenInput.value.replace(/[^0-9]/g, '');
-			this.OnChange(this.GetRGBAFromInputs());
+		this.greenInput.addEventListener('keypress', () => {
+			requestAnimationFrame(() => {
+				this.greenInput.value = this.greenInput.value.replace(/[^0-9]/g, '');
+				this.OnChange(this.GetRGBAFromInputs());
+			});
 		});
 
 		const bInputItem = this.CreateIntegerInput(cpEnumRGBA.Blue, this.options.blueInputLabel);
 		this.blueInput = bInputItem.querySelector('input');
 		valueInputContainer.appendChild(bInputItem);
-		this.blueInput.addEventListener('keyup', () => {
-			this.blueInput.value = this.blueInput.value.replace(/[^0-9]/g, '');
-			this.OnChange(this.GetRGBAFromInputs());
+		this.blueInput.addEventListener('keypress', () => {
+			requestAnimationFrame(() => {
+				this.blueInput.value = this.blueInput.value.replace(/[^0-9]/g, '');
+				this.OnChange(this.GetRGBAFromInputs());
+			});
 		});
 
 		if (this.options.showAlphaControl) {
 			const aInputItem = this.CreateIntegerInput(cpEnumRGBA.Alpha, this.options.alphaInputLabel);
 			this.alphaInput = aInputItem.querySelector('input');
 			valueInputContainer.appendChild(aInputItem);
-			this.alphaInput.addEventListener('keyup', () => {
-			this.alphaInput.value = this.alphaInput.value.replace(/[^0-9]/g, '');
-			this.OnChange(this.GetRGBAFromInputs());
+			this.alphaInput.addEventListener('keypress', () => {
+				requestAnimationFrame(() => {
+					this.alphaInput.value = this.alphaInput.value.replace(/[^0-9]/g, '');
+					this.OnChange(this.GetRGBAFromInputs());
+				});
 			});
 		}
 
