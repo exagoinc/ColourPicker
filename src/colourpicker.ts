@@ -8,6 +8,7 @@ class ColourPicker {
 	private options: ColourPickerOptions;
 
 	private container: HTMLElement;
+	private fieldMarker: HTMLElement;
 	private colourField: HTMLElement;
 	private colourFieldMarker: HTMLElement;
 	private hueSlider: HTMLElement;
@@ -54,6 +55,8 @@ class ColourPicker {
 		this.container.classList.add('colour-picker');
 		this.container.appendChild(docFragment);
 
+		this.container.addEventListener('mousedown', (evt) => { this.ColourFieldMouseDown(evt); });
+
 		const initialColour = this.options.initialColour;
 		this.UpdateHexInput(initialColour.GetHex());
 		this.UpdateRGBAInput(initialColour.GetRGBA());
@@ -89,14 +92,18 @@ class ColourPicker {
 		const lightnessGradient = document.createElement('div');
 		lightnessGradient.classList.add('colour-field__lightness');
 		this.colourField.appendChild(lightnessGradient);
-		lightnessGradient.addEventListener('mousedown', (evt) => { this.ColourFieldMouseDown(evt); });
 
-		const fieldMarker = document.createElement('div');
-		fieldMarker.classList.add('colour-field__marker');
-		this.colourField.appendChild(fieldMarker);
+		this.fieldMarker = document.createElement('div');
+		this.fieldMarker.classList.add('colour-field__marker');
+		this.colourField.appendChild(this.fieldMarker);
 	}
 	
 	private ColourFieldMouseDown(evt: MouseEvent): void {
+		// Allow dragging to begin only from the color field or
+		// the field marker.
+		if (evt.target !== this.colourField && evt.target !== this.fieldMarker)
+			return;
+		
 		this.colourField.style.cursor = 'none';
 
 		const hsv = this.SetColourFieldHSV(evt);
