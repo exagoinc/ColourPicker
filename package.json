@@ -20,7 +20,7 @@
 	"devDependencies": {
 		"concurrently": "^3.6.1",
 		"less-watch-compiler": "^1.13.0",
-		"tslint": "^5.12.1",
+		"tslint": "^5.16.0",
 		"tslint-config-airbnb-base": "^0.1.0"
 	},
 	"dependencies": {
