@@ -6,6 +6,7 @@
 		"sourceMap": true,                        /* Generates corresponding '.map' file. */
 		"removeComments": true,                   /* Do not emit comments to output. */
 		"outDir": "./build",
+		"declaration": true,
 
 		/* Strict Type-Checking Options */
 		"strict": true,                           /* Enable all strict type-checking options. */
