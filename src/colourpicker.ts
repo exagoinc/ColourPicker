@@ -56,6 +56,7 @@ class ColourPicker {
 		this.container.appendChild(docFragment);
 
 		this.container.addEventListener('mousedown', (evt) => { this.ColourFieldMouseDown(evt); });
+		this.container.addEventListener('touchstart', (evt) => { this.ColourFieldMouseDown(evt); });
 
 		const initialColour = this.options.initialColour;
 		this.UpdateHexInput(initialColour.GetHex());
@@ -98,7 +99,7 @@ class ColourPicker {
 		this.colourField.appendChild(this.fieldMarker);
 	}
 	
-	private ColourFieldMouseDown(evt: MouseEvent): void {
+	private ColourFieldMouseDown(evt: MouseEvent | TouchEvent): void {
 		// Allow dragging to begin only from the color field or
 		// the field marker.
 		if (evt.target !== this.colourField && evt.target !== this.fieldMarker)
@@ -109,7 +110,7 @@ class ColourPicker {
 		const hsv = this.SetColourFieldHSV(evt);
 		this.OnChange(hsv);
 
-		const mouseMoveCallback = (event: MouseEvent) => { 
+		const mouseMoveCallback = (event: MouseEvent | TouchEvent) => { 
 			const newHSV = this.SetColourFieldHSV(event);
 			this.OnChange(newHSV);
 
@@ -118,10 +119,14 @@ class ColourPicker {
 		const mouseUpCallback = () => { 
 			this.colourField.style.cursor = 'default';
 			window.removeEventListener('mousemove', mouseMoveCallback);
+			window.removeEventListener('touchmove', mouseMoveCallback);
 			window.removeEventListener('mouseup', mouseUpCallback);
+			window.removeEventListener('touchend', mouseUpCallback);
 		};
 		window.addEventListener('mousemove', mouseMoveCallback);
+		window.addEventListener('touchmove', mouseMoveCallback);
 		window.addEventListener('mouseup', mouseUpCallback);
+		window.addEventListener('touchend', mouseUpCallback);
 		
 		evt.preventDefault();		
 	}
@@ -135,11 +140,11 @@ class ColourPicker {
 		};
 	}
 
-	private SetColourFieldHSV(evt: MouseEvent): cpHSV {
+	private SetColourFieldHSV(evt: MouseEvent | TouchEvent): cpHSV {
 		const colourFieldBoundingBox = this.colourField.getBoundingClientRect();
-		let mouseX = Math.max(evt.clientX, colourFieldBoundingBox.left); 
+		let mouseX = Math.max(evt instanceof MouseEvent ? evt.clientX : evt.targetTouches.item(0).clientX, colourFieldBoundingBox.left); 
 		mouseX = Math.min(mouseX, colourFieldBoundingBox.right);
-		let mouseY = Math.max(evt.clientY, colourFieldBoundingBox.top); 
+		let mouseY = Math.max(evt instanceof MouseEvent ? evt.clientY : evt.targetTouches.item(0).clientY, colourFieldBoundingBox.top); 
 		mouseY = Math.min(mouseY, colourFieldBoundingBox.bottom);
 
 		const colourFieldX = mouseX - colourFieldBoundingBox.left;
@@ -155,13 +160,14 @@ class ColourPicker {
 		hueSliderGradient.classList.add('hue-slider__gradient');
 		this.hueSlider.appendChild(hueSliderGradient);
 		hueSliderGradient.addEventListener('mousedown', (evt) => { this.HueSliderMouseDown(evt); });
+		hueSliderGradient.addEventListener('touchstart', (evt) => { this.HueSliderMouseDown(evt); });
 
 		const hueSliderHandle = document.createElement('div');
 		hueSliderHandle.classList.add('hue-slider__handle');
 		this.hueSlider.appendChild(hueSliderHandle);
 	}
 
-	private HueSliderMouseDown (evt: MouseEvent): void {
+	private HueSliderMouseDown (evt: MouseEvent | TouchEvent): void {
 		this.UpdateHueSliderHandle(evt);
 
 		const markerX = this.colourFieldMarker.offsetLeft + this.colourFieldMarker.offsetWidth / 2;
@@ -171,7 +177,7 @@ class ColourPicker {
 
 		window.getSelection().removeAllRanges();
 
-		const mouseMoveCallback = (event: MouseEvent) => { 
+		const mouseMoveCallback = (event: MouseEvent | TouchEvent) => { 
 			this.UpdateHueSliderHandle(event);
 
 			const newMarkerX = this.colourFieldMarker.offsetLeft + this.colourFieldMarker.offsetWidth / 2;
@@ -183,17 +189,21 @@ class ColourPicker {
 		};
 		const mouseUpCallback = () => { 
 			window.removeEventListener('mousemove', mouseMoveCallback);
+			window.removeEventListener('touchmove', mouseMoveCallback);
 			window.removeEventListener('mouseup', mouseUpCallback);
+			window.removeEventListener('touchend', mouseUpCallback);
 		};
 		window.addEventListener('mousemove', mouseMoveCallback);
+		window.addEventListener('touchmove', mouseMoveCallback);
 		window.addEventListener('mouseup', mouseUpCallback);
+		window.addEventListener('touchend', mouseUpCallback);
 
 		evt.preventDefault();
 	}
 
-	private UpdateHueSliderHandle(evt: MouseEvent) {
+	private UpdateHueSliderHandle(evt: MouseEvent | TouchEvent) {
 		const hueSliderBoundingBox = this.hueSlider.getBoundingClientRect();
-		let mouseX = Math.max(evt.clientX, hueSliderBoundingBox.left); 
+		let mouseX = Math.max(evt instanceof MouseEvent ? evt.clientX : evt.targetTouches.item(0).clientX, hueSliderBoundingBox.left); 
 		mouseX = Math.min(mouseX, hueSliderBoundingBox.right);
 
 		this.hueSliderHandle.style.left = mouseX - hueSliderBoundingBox.left + 'px';
