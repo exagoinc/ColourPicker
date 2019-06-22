@@ -540,37 +540,83 @@ class Colour {
 		
 		hsv.V = max;
 		hsv.S = max === 0 ? 0 : delta / max;
+		hsv.H = this.HueFromRGB(r, g, b, max, delta);
 		
-		if (r === max) {
-			const deltaOffset = g < b ? 6 : 0;
-			hsv.H = (delta + deltaOffset === 0) ? 0 : (g - b) / delta + deltaOffset;
-		} else if (g === max) {
-			hsv.H = (b - r) / delta + 2;
-		} else if (b === max) {
-			hsv.H = (r - g) / delta + 4;
-		}
-		hsv.H = hsv.H / 6;
-
 		return hsv;
 	}
 
-	private DecimalToHex(decimal: number) {
+	public GetHSL(): cpHSL {
+		const r = this.R / 255;
+		const g = this.G / 255;
+		const b = this.B / 255;
+		const hsl = { H: 0, S: 0, L: 0 };
+
+		const max = Math.max(r, g, b);
+		const min = Math.min(r, g, b);
+		const delta = max - min;
+
+		hsl.L = (max + min) / 2;
+
+		if (delta === 0)
+			return hsl;
+		
+		if (hsl.L > 0.5)
+			hsl.S = delta / (2 - max - min);
+		else
+			hsl.S = delta / (max + min);
+		
+		hsl.H = this.HueFromRGB(r, g, b, max, delta);
+
+		return hsl;
+	}
+
+	private HueFromRGB(r: number, g: number, b: number, max: number, delta: number): number {
+		let h;
+		if (r === max) {
+			const deltaOffset = g < b ? 6 : 0;
+			h = (delta + deltaOffset === 0) ? 0 : (g - b) / delta + deltaOffset;
+		} else if (g === max) {
+			h = (b - r) / delta + 2;
+		} else if (b === max) {
+			h = (r - g) / delta + 4;
+		}
+
+		return h / 6;
+	}
+
+	private DecimalToHex(decimal: number): string {
 		const hex = decimal.toString(16).toUpperCase();
 		return hex.length === 1 ? '0' + hex : hex;
 	}
 }
 
 interface cpRGBA {
+	/** Red, between 0 and 255 */
 	R: number;
+	/** Green, between 0 and 255 */
 	G: number;
+	/** Blue, between 0 and 255 */
 	B: number;
+	/** Alpha (opacity), between 0 and 100 */
 	A: number;
 }
 
 interface cpHSV {
+	/** Hue, between 0 and 1 */
 	H: number;
+	/** Saturation, between 0 and 1 */
 	S: number;
+	/** Value, between 0 and 1 */
 	V: number;
+}
+
+interface cpHSL {
+	/** Hue, between 0 and 1 */
+	H: number;
+	/** Saturation, between 0 and 1 */
+	S: number;
+	/** Lightness, between 0 and 1 */
+	L: number;
 }
 
 enum cpEnumRGBA {
