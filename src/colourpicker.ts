@@ -511,6 +511,29 @@ class Colour {
 		}
 	}
 
+	public SetHSL(hsl: cpHSL): void	{
+		const huePrime = hsl.H * 6;
+		const c = (1 - Math.abs(2 * hsl.L - 1)) * hsl.S;
+		const x = c * (1 - Math.abs(huePrime % 2 - 1));
+		
+		const hueSector = Math.floor(huePrime);
+		switch (hueSector % 6) {
+			case 0: this.R = c, this.G = x, this.B = 0; break;
+			case 1: this.R = x, this.G = c, this.B = 0; break;
+			case 2: this.R = 0, this.G = c, this.B = x; break;
+			case 3: this.R = 0, this.G = x, this.B = c; break;
+			case 4: this.R = x, this.G = 0, this.B = c; break;
+			case 5: this.R = c, this.G = 0, this.B = x; break;
+			default: 
+				this.R = 0; this.G = 0; this.B = 0;
+		}
+
+		const m = hsl.L - c / 2;
+		this.R += m;
+		this.G += m;
+		this.B += m;
+	}
+
 	public ToCssString(includeAlpha = false): string {
 		let str = includeAlpha ? 'rgba(' : 'rgb(';
 		str += this.R + ', ' + this.G + ', ' + this.B;

@@ -52,10 +52,13 @@ declare class Colour {
     SetAlpha(alpha: number): void;
     SetHex(hex: string): boolean;
     SetHSV(hsv: cpHSV): void;
+    SetHSL(hsl: cpHSL): void;
     ToCssString(includeAlpha?: boolean): string;
     GetRGBA(): cpRGBA;
     GetHex(includeAlpha?: boolean): string;
     GetHSV(): cpHSV;
+    GetHSL(): cpHSL;
+    private HueFromRGB;
     private DecimalToHex;
 }
 interface cpRGBA {
@@ -68,6 +71,11 @@ interface cpHSV {
     H: number;
     S: number;
     V: number;
+}
+interface cpHSL {
+    H: number;
+    S: number;
+    L: number;
 }
 declare enum cpEnumRGBA {
     Red = "r",
