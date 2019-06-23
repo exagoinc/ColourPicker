@@ -4,7 +4,7 @@
  * https://github.com/lrvolle/ColourPicker
  */
 
-class ColourPicker {
+export class ColourPicker {
 	private options: ColourPickerOptions;
 
 	private container: HTMLElement;
@@ -425,20 +425,22 @@ class ColourPickerOptions{
 	public alphaInputLabel?: string = 'A';
 }
 
-class Colour {
+export class Colour {
 	private R: number = 255;
 	private G: number = 255;
 	private B: number = 255;
 	private A: number = 100;
 
-	constructor(colour?: string | cpRGBA | cpHSV) {
+	constructor(colour?: string | cpRGBA | cpHSV | cpHSL) {
 		if (colour != null) {
 			if (colour instanceof String || typeof colour === 'string') 
 				this.SetHex(colour as string);
 			else if (colour.hasOwnProperty('R'))
 				this.SetRGBA(colour as cpRGBA);
-			else if (colour.hasOwnProperty('H'))
+			else if (colour.hasOwnProperty('V'))
 				this.SetHSV(colour as cpHSV);
+			else if (colour.hasOwnProperty('L'))
+				this.SetHSL(colour as cpHSL);
 		}
 	}
 
@@ -517,21 +519,22 @@ class Colour {
 		const x = c * (1 - Math.abs(huePrime % 2 - 1));
 		
 		const hueSector = Math.floor(huePrime);
+		let r, g, b;
 		switch (hueSector % 6) {
-			case 0: this.R = c, this.G = x, this.B = 0; break;
-			case 1: this.R = x, this.G = c, this.B = 0; break;
-			case 2: this.R = 0, this.G = c, this.B = x; break;
-			case 3: this.R = 0, this.G = x, this.B = c; break;
-			case 4: this.R = x, this.G = 0, this.B = c; break;
-			case 5: this.R = c, this.G = 0, this.B = x; break;
+			case 0: r = c, g = x, b = 0; break;
+			case 1: r = x, g = c, b = 0; break;
+			case 2: r = 0, g = c, b = x; break;
+			case 3: r = 0, g = x, b = c; break;
+			case 4: r = x, g = 0, b = c; break;
+			case 5: r = c, g = 0, b = x; break;
 			default: 
-				this.R = 0; this.G = 0; this.B = 0;
+				r = 0; g = 0; b = 0;
 		}
 
 		const m = hsl.L - c / 2;
-		this.R += m;
-		this.G += m;
-		this.B += m;
+		this.R = (r + m) * 255;
+		this.G = (g + m) * 255;
+		this.B = (b + m) * 255;
 	}
 
 	public ToCssString(includeAlpha = false): string {
