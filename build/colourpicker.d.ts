@@ -33,7 +33,7 @@ export declare class ColourPicker {
     private UpdateRGBAInput;
     private UpdateColourField;
 }
-declare class ColourPickerOptions {
+export declare class ColourPickerOptions {
     initialColour: Colour;
     showAlphaControl: boolean;
     hexInputLabel: string;

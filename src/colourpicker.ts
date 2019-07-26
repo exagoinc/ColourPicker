@@ -413,7 +413,7 @@ export class ColourPicker {
 	}
 }
 
-class ColourPickerOptions{
+export class ColourPickerOptions{
 	public initialColour: Colour = new Colour({ R: 255, G: 0, B: 0, A: 100 });
 	public showAlphaControl: boolean = false;
 
