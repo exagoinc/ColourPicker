@@ -13,12 +13,13 @@ export class ColourPicker {
 	private colourFieldMarker: HTMLElement;
 	private hueSlider: HTMLElement;
 	private hueSliderHandle: HTMLElement;
-	private colourPreview?: HTMLElement;
 	private hexInput: HTMLInputElement;
 	private redInput: HTMLInputElement;
 	private greenInput: HTMLInputElement;
 	private blueInput: HTMLInputElement;
 	private alphaInput: HTMLInputElement;
+	private defaultColoursPalette: HTMLElement;
+	private recentColoursPalette: HTMLElement;
 
 	private onChange: (colour: Colour) => void;
 
@@ -38,19 +39,19 @@ export class ColourPicker {
 		
 		const docFragment = document.createDocumentFragment();
 		
-		this.CreateColourField();
+		this.colourField = this.CreateColourField();
 		this.colourFieldMarker = <HTMLElement>this.colourField.querySelector('.colour-field__marker');
 		docFragment.appendChild(this.colourField);
 
-		this.CreateHueSlider();
+		this.hueSlider = this.CreateHueSlider();
 		this.hueSliderHandle = <HTMLElement>this.hueSlider.querySelector('.hue-slider__handle');
 		docFragment.appendChild(this.hueSlider);
 
 		const valueInputContainer = this.CreateValueInputs();
 		docFragment.appendChild(valueInputContainer);
 
-		this.colourPreview = document.createElement('div');
-		docFragment.appendChild(this.colourPreview);
+		this.defaultColoursPalette = this.CreateDefaultColoursPalette();
+		docFragment.appendChild(this.defaultColoursPalette);
 
 		this.container.classList.add('colour-picker');
 		this.container.appendChild(docFragment);
@@ -86,17 +87,19 @@ export class ColourPicker {
 	 * Creates and returns a rectangular Colour Field, with a movable marker
 	 * and gradients representing lightness & saturation.
 	 */
-	private CreateColourField(): void {
-		this.colourField = document.createElement('div');
-		this.colourField.classList.add('colour-field');
+	private CreateColourField(): HTMLElement {
+		const colourField = document.createElement('div');
+		colourField.classList.add('colour-field');
 		
 		const lightnessGradient = document.createElement('div');
 		lightnessGradient.classList.add('colour-field__lightness');
-		this.colourField.appendChild(lightnessGradient);
+		colourField.appendChild(lightnessGradient);
 
 		this.fieldMarker = document.createElement('div');
 		this.fieldMarker.classList.add('colour-field__marker');
-		this.colourField.appendChild(this.fieldMarker);
+		colourField.appendChild(this.fieldMarker);
+
+		return colourField;
 	}
 	
 	private ColourFieldMouseDown(evt: MouseEvent | TouchEvent): void {
@@ -152,19 +155,21 @@ export class ColourPicker {
 		return this.GetColourFieldHSV(colourFieldX, colourFieldY);
 	}
 
-	private CreateHueSlider(): void {
-		this.hueSlider = document.createElement('div');
-		this.hueSlider.classList.add('hue-slider');
+	private CreateHueSlider(): HTMLElement {
+		const hueSlider = document.createElement('div');
+		hueSlider.classList.add('hue-slider');
 
 		const hueSliderGradient = document.createElement('div');
 		hueSliderGradient.classList.add('hue-slider__gradient');
-		this.hueSlider.appendChild(hueSliderGradient);
+		hueSlider.appendChild(hueSliderGradient);
 		hueSliderGradient.addEventListener('mousedown', (evt) => { this.HueSliderMouseDown(evt); });
 		hueSliderGradient.addEventListener('touchstart', (evt) => { this.HueSliderMouseDown(evt); });
 
 		const hueSliderHandle = document.createElement('div');
 		hueSliderHandle.classList.add('hue-slider__handle');
-		this.hueSlider.appendChild(hueSliderHandle);
+		hueSlider.appendChild(hueSliderHandle);
+
+		return hueSlider;
 	}
 
 	private HueSliderMouseDown (evt: MouseEvent | TouchEvent): void {
@@ -294,7 +299,7 @@ export class ColourPicker {
 
 		this.hexInput = document.createElement('input'); 
 		this.hexInput.classList.add('colour-input__hex');
-		this.hexInput.setAttribute("spellcheck", "false");
+		this.hexInput.setAttribute('spellcheck', 'false');
 		hexInputContainer.appendChild(this.hexInput);
 
 		const hexInputLbl = document.createElement('span'); 
@@ -324,6 +329,20 @@ export class ColourPicker {
 		intInputContainer.appendChild(intInputLbl);
 
 		return intInputContainer;
+	}
+
+	private CreateDefaultColoursPalette(): HTMLElement {
+		const defaultColoursPalette = document.createElement('div');
+		this.options.defaultColours.forEach((colour) => 
+		{
+			const colourOption = document.createElement('div');
+			colourOption.classList.add('colour-option');
+			colourOption.addEventListener('click', () => {
+				this.SetColour(colour);
+			});
+		});
+		
+		return defaultColoursPalette;
 	}
 
 	private IntegerInputMouseDown(evt: MouseEvent, intInput: HTMLInputElement, maxValue: number): void {
@@ -416,6 +435,8 @@ export class ColourPicker {
 export class ColourPickerOptions{
 	public initialColour: Colour = new Colour({ R: 255, G: 0, B: 0, A: 100 });
 	public showAlphaControl: boolean = false;
+	public defaultColours: Colour[] = [];
+	public showRecentColours: boolean = false;
 
 	/** Labels that appear underneath input boxes */
 	public hexInputLabel: string = 'Hex';

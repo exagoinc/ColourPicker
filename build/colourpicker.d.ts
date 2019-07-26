@@ -6,12 +6,13 @@ export declare class ColourPicker {
     private colourFieldMarker;
     private hueSlider;
     private hueSliderHandle;
-    private colourPreview?;
     private hexInput;
     private redInput;
     private greenInput;
     private blueInput;
     private alphaInput;
+    private defaultColoursPalette;
+    private recentColoursPalette;
     private onChange;
     constructor(container: HTMLElement, onChange: (rgba: Colour) => void, options?: ColourPickerOptions);
     GetColour(): Colour;
@@ -27,6 +28,7 @@ export declare class ColourPicker {
     private GetRGBAFromInputs;
     private CreateHexInput;
     private CreateIntegerInput;
+    private CreateDefaultColoursPalette;
     private IntegerInputMouseDown;
     private OnChange;
     private UpdateHexInput;
@@ -36,6 +38,8 @@ export declare class ColourPicker {
 export declare class ColourPickerOptions {
     initialColour: Colour;
     showAlphaControl: boolean;
+    defaultColours: Colour[];
+    showRecentColours: boolean;
     hexInputLabel: string;
     redInputLabel: string;
     greenInputLabel?: string;
