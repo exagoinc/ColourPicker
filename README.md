@@ -1,9 +1,10 @@
 # ColourPicker
-A pure TypeScript colour picker.
+A pure TypeScript colour picker.  
+Visit https://volleio.github.io/ColourPicker/ to view a live example. 
 
 ## Supported Browsers
 Chrome, Firefox, Edge, IE11  
-Mobile (touch) devices are not yet fully supported.  
+Mobile (touch) devices are partially supported.  
 
 ## To build
 * Install dependencies  
