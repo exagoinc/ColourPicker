@@ -1,0 +1,124 @@
+/**
+ * ColourPicker Stylesheet
+ * A pure TypeScript colour picker (OK and some CSS)
+ * https://github.com/lrvolle/ColourPicker
+ */
+.colour-picker {
+  width: 220px;
+  padding: 6px;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  border: 1px solid rgba(200, 200, 200, 0.5);
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.12);
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  background-color: #FFF;
+  touch-action: none;
+}
+.colour-field {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(to right, #FFF, #F00);
+}
+.colour-field .colour-field__lightness {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), #000);
+  user-select: none;
+  pointer-events: none;
+}
+.colour-field .colour-field__marker {
+  position: absolute;
+  bottom: calc(100% - 10px / 2);
+  left: calc(100% - 10px / 2);
+  width: 10px;
+  height: 10px;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  box-sizing: border-box;
+  box-shadow: 0 0 1px 1px #000000;
+}
+.hue-slider {
+  position: relative;
+  height: 13px;
+  width: calc(100% - 8px);
+  padding: 1px;
+  margin: 8px 4px 9px 0;
+  user-select: none;
+}
+.hue-slider .hue-slider__gradient {
+  height: 100%;
+  width: calc(100% + 3px);
+  margin-right: -2px;
+  border-radius: 2px;
+  background: linear-gradient(to right, #F00 0%, #FF0 17%, #0F0 33%, #0FF 50%, #00F 67%, #F0F 83%, #F00 100%);
+}
+.hue-slider .hue-slider__handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  border: 1px solid #ffffff;
+  border-radius: 2px;
+  box-sizing: border-box;
+  box-shadow: 0 0 1px 1px #000000;
+  pointer-events: none;
+}
+.colour-inputs {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.colour-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #444;
+}
+.colour-input > input {
+  width: 30px;
+  font-size: 12px;
+  text-align: center;
+  color: inherit;
+  border: 1px solid rgba(200, 200, 200, 0.5);
+  border-radius: 2px;
+  -webkit-appearance: none;
+}
+.colour-input .colour-input__hex {
+  width: 70px;
+}
+.colour-input .colour-input__lbl {
+  margin-top: 3px;
+  user-select: none;
+}
+.colour-palette {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 4px;
+}
+.colour-palette__row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 3px;
+}
+.colour-option {
+  min-width: 12px;
+  min-height: 22px;
+  max-width: 22px;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.colour-option:hover {
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+}
+/*# sourceMappingURL=colourpicker.css.map */
