@@ -4,7 +4,7 @@
 	"description": "A pure TypeScript colour picker",
 	"main": "colourpicker.js",
 	"scripts": {
-		"test": "concurrently --kill-others \"tsc -w\" \"less-watch-compiler --source-map src build\"",
+		"test": "concurrently --kill-others \"tsc -w\" \"less-watch-compiler --source-map src build\" \"http-server\"",
 		"build": "tsc && less-watch-compiler --run-once src build"
 	},
 	"repository": {

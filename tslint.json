@@ -11,7 +11,8 @@
 		"curly": false,
 		"no-use-before-declare": false,
 		"max-line-length": [true, 150],
-		"one-variable-per-declaration": false
+		"one-variable-per-declaration": false,
+		"ter-max-len": [true, 150]
 	},
 	"rulesDirectory": []
 }

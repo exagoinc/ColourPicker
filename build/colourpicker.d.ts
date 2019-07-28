@@ -38,7 +38,7 @@ export declare class ColourPicker {
 export declare class ColourPickerOptions {
     initialColour: Colour;
     showAlphaControl: boolean;
-    defaultColours: Colour[];
+    defaultColours: Colour[][];
     showRecentColours: boolean;
     hexInputLabel: string;
     redInputLabel: string;

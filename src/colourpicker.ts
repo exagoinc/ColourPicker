@@ -333,13 +333,28 @@ export class ColourPicker {
 
 	private CreateDefaultColoursPalette(): HTMLElement {
 		const defaultColoursPalette = document.createElement('div');
-		this.options.defaultColours.forEach((colour) => 
+		defaultColoursPalette.classList.add('default-colours');
+		defaultColoursPalette.classList.add('colour-palette');
+		this.options.defaultColours.forEach((colourRow) => 
 		{
-			const colourOption = document.createElement('div');
-			colourOption.classList.add('colour-option');
-			colourOption.addEventListener('click', () => {
-				this.SetColour(colour);
+			const colourPaletteRow = document.createElement('div');
+			colourPaletteRow.classList.add('colour-palette__row');
+
+			colourRow.forEach((colour) => {
+				const colourOption = document.createElement('div');
+				colourOption.classList.add('colour-option');
+				colourOption.style.backgroundColor = colour.ToCssString(true);
+				if (colour.GetHSL().L > 0.9)
+					colourOption.style.border = '1px solid rgba(200, 200, 200, 0.5)';
+
+				colourOption.addEventListener('click', () => {
+					this.SetColour(colour);
+					this.onChange(colour);
+				});
+				colourPaletteRow.appendChild(colourOption);
 			});
+
+			defaultColoursPalette.appendChild(colourPaletteRow);
 		});
 		
 		return defaultColoursPalette;
@@ -435,7 +450,7 @@ export class ColourPicker {
 export class ColourPickerOptions{
 	public initialColour: Colour = new Colour({ R: 255, G: 0, B: 0, A: 100 });
 	public showAlphaControl: boolean = false;
-	public defaultColours: Colour[] = [];
+	public defaultColours: Colour[][] = [[]];
 	public showRecentColours: boolean = false;
 
 	/** Labels that appear underneath input boxes */
@@ -496,7 +511,7 @@ export class Colour {
 				const parsedInt = parseInt(hex.substr(6, 2), 16);
 				this.A = Math.round(parsedInt / 2.55);	
 			} else {
-				this.A = null;
+				this.A = 100;
 			}
 		} else {
 			return false;
