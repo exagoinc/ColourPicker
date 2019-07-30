@@ -56,6 +56,7 @@
 		[ new Colour('#40A4D8'), new Colour('#33BEB8'), new Colour('#25C23E'), new Colour('#FEE62F'), new Colour('#F9A228'), new Colour('#F6621F'), new Colour('#DB3838'), new Colour('#EE657A'), new Colour('#A363D9') ],
 		[ new Colour('#2d7397'), new Colour('#248581'), new Colour('#1a882b'), new Colour('#b2a121'), new Colour('#ae711c'), new Colour('#ac4516'), new Colour('#992727'), new Colour('#a74755'), new Colour('#724598') ]
 	];
+	colourPickerOptions.resetColour = new Colour('#FFFFFF');
 
 	const colourPicker = new ColourPicker(colourPickerElem, function (rgba) {
 		contentElem.style.backgroundColor = "rgba(" + rgba.R + ", " + rgba.G + ", " + rgba.B + ", " + rgba.A + "%)";		

@@ -18,4 +18,4 @@ Mobile (touch) devices are partially supported.
 	`npm install`
 
 * Build whenever a file changes
-	`npm run test`
+	`npm run dev`

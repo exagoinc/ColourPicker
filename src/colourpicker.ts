@@ -1,7 +1,7 @@
 /**
  * ColourPicker
  * A pure TypeScript colour picker
- * https://github.com/lrvolle/ColourPicker
+ * https://github.com/volleio/ColourPicker
  */
 
 export class ColourPicker {
@@ -18,8 +18,9 @@ export class ColourPicker {
 	private greenInput: HTMLInputElement;
 	private blueInput: HTMLInputElement;
 	private alphaInput: HTMLInputElement;
+	private resetColourButton: HTMLElement;
 	private defaultColoursPalette: HTMLElement;
-	private recentColoursPalette: HTMLElement;
+	private customColoursPalette: HTMLElement;
 
 	private onChange: (colour: Colour) => void;
 
@@ -50,8 +51,20 @@ export class ColourPicker {
 		const valueInputContainer = this.CreateValueInputs();
 		docFragment.appendChild(valueInputContainer);
 
+		if (this.options.resetColour != null)
+		{
+			this.resetColourButton = this.CreateResetColourButton();
+			docFragment.appendChild(this.resetColourButton);
+		}
+
 		this.defaultColoursPalette = this.CreateDefaultColoursPalette();
 		docFragment.appendChild(this.defaultColoursPalette);
+
+		if (this.options.showCustomColours)
+		{
+			this.customColoursPalette = this.CreateCustomColoursPalette();
+			docFragment.appendChild(this.customColoursPalette);
+		}
 
 		this.container.classList.add('colour-picker');
 		this.container.appendChild(docFragment);
@@ -331,6 +344,19 @@ export class ColourPicker {
 		return intInputContainer;
 	}
 
+	private CreateResetColourButton(): HTMLElement {
+		const resetColourButton = document.createElement('div');
+		resetColourButton.classList.add('reset-colour-button');
+		resetColourButton.innerHTML = this.options.resetColourLabel;
+
+		resetColourButton.addEventListener('click', () => {
+			this.SetColour(this.options.resetColour);
+			this.onChange(this.options.resetColour);
+		});
+
+		return resetColourButton;
+	}
+
 	private CreateDefaultColoursPalette(): HTMLElement {
 		const defaultColoursPalette = document.createElement('div');
 		defaultColoursPalette.classList.add('default-colours');
@@ -358,6 +384,26 @@ export class ColourPicker {
 		});
 		
 		return defaultColoursPalette;
+	}
+
+	private CreateCustomColoursPalette(): HTMLElement {
+		const customColoursPalette = document.createElement('div');
+		customColoursPalette.classList.add('custom-colours');
+		this.options.defaultCustomColours.forEach((colour) => {
+			const colourOption = document.createElement('div');
+			colourOption.classList.add('colour-option');
+			colourOption.style.backgroundColor = colour.ToCssString(true);
+			if (colour.GetHSL().L > 0.9)
+				colourOption.style.border = '1px solid rgba(200, 200, 200, 0.5)';
+
+			colourOption.addEventListener('click', () => {
+				this.SetColour(colour);
+				this.onChange(colour);
+			});
+			customColoursPalette.appendChild(colourOption);
+		});
+
+		return customColoursPalette;
 	}
 
 	private IntegerInputMouseDown(evt: MouseEvent, intInput: HTMLInputElement, maxValue: number): void {
@@ -451,7 +497,9 @@ export class ColourPickerOptions{
 	public initialColour: Colour = new Colour({ R: 255, G: 0, B: 0, A: 100 });
 	public showAlphaControl: boolean = false;
 	public defaultColours: Colour[][] = [[]];
-	public showRecentColours: boolean = false;
+	public showCustomColours: boolean = false;
+	public defaultCustomColours: Colour[] = [];
+	public resetColour: Colour = null;
 
 	/** Labels that appear underneath input boxes */
 	public hexInputLabel: string = 'Hex';
@@ -459,6 +507,7 @@ export class ColourPickerOptions{
 	public greenInputLabel?: string = 'G';
 	public blueInputLabel?: string = 'B';
 	public alphaInputLabel?: string = 'A';
+	public resetColourLabel?: string = 'Reset';
 }
 
 export class Colour {
