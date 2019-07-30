@@ -111,16 +111,29 @@
 }
 
 .reset-colour-button {
+	display: flex;
+	align-items: center;
+	
+	width: 100%;
 	margin-top: 4px;
     padding: 6px 0;
-    width: 100%;
-    text-align: center;
 	border-radius: 3px;
+	
     cursor: pointer;
 	
 	&:hover {
 		background-color: rgba(200, 200, 200, 0.2);
 	}
+}
+
+.reset-colour-button__icon {
+	height: 22px;
+	width: 22px;
+	margin: 0 6px;
+	
+	background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iIzYwNjA2MCI+PHBhdGggZD0iTTAgMGgyNHYyNEgwem0wIDBoMjR2MjRIMHptMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE4IDE0YzAtNC02LTEwLjgtNi0xMC44cy0xLjMzIDEuNTEtMi43MyAzLjUybDguNTkgOC41OWMuMDktLjQyLjE0LS44Ni4xNC0xLjMxem0tLjg4IDMuMTJMMTIuNSAxMi41IDUuMjcgNS4yNyA0IDYuNTVsMy4zMiAzLjMyQzYuNTUgMTEuMzIgNiAxMi43OSA2IDE0YzAgMy4zMSAyLjY5IDYgNiA2IDEuNTIgMCAyLjktLjU3IDMuOTYtMS41bDIuNjMgMi42MyAxLjI3LTEuMjctMi43NC0yLjc0eiIvPjwvc3ZnPg==');
+	background-size: 22px 22px;
+	background-repeat: no-repeat;	
 }
 
 .colour-palette {

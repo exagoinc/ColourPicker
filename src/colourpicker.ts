@@ -347,8 +347,16 @@ export class ColourPicker {
 	private CreateResetColourButton(): HTMLElement {
 		const resetColourButton = document.createElement('div');
 		resetColourButton.classList.add('reset-colour-button');
-		resetColourButton.innerHTML = this.options.resetColourLabel;
 
+		const resetColourButtonIcon = document.createElement('div');
+		resetColourButtonIcon.classList.add('reset-colour-button__icon');
+		resetColourButton.appendChild(resetColourButtonIcon);
+
+		const resetColourButtonLabel = document.createElement('span');
+		resetColourButtonLabel.classList.add('reset-colour-button__span');
+		resetColourButtonLabel.innerHTML = this.options.resetColourLabel;
+		resetColourButton.appendChild(resetColourButtonLabel);
+		
 		resetColourButton.addEventListener('click', () => {
 			this.SetColour(this.options.resetColour);
 			this.onChange(this.options.resetColour);
