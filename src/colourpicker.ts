@@ -51,8 +51,7 @@ export class ColourPicker {
 		const valueInputContainer = this.CreateValueInputs();
 		docFragment.appendChild(valueInputContainer);
 
-		if (this.options.resetColour != null)
-		{
+		if (this.options.resetColour != null) {
 			this.resetColourButton = this.CreateResetColourButton();
 			docFragment.appendChild(this.resetColourButton);
 		}
@@ -60,8 +59,13 @@ export class ColourPicker {
 		this.defaultColoursPalette = this.CreateDefaultColoursPalette();
 		docFragment.appendChild(this.defaultColoursPalette);
 
-		if (this.options.showCustomColours)
-		{
+		if (this.defaultColoursPalette.childElementCount > 0 && this.options.showCustomColours) {
+			const colourPaletteSpacer = document.createElement('div');
+			colourPaletteSpacer.classList.add('colour-palette-spacer');
+			docFragment.appendChild(colourPaletteSpacer);
+		}
+
+		if (this.options.showCustomColours) {
 			this.customColoursPalette = this.CreateCustomColoursPalette();
 			docFragment.appendChild(this.customColoursPalette);
 		}
@@ -368,11 +372,10 @@ export class ColourPicker {
 	private CreateDefaultColoursPalette(): HTMLElement {
 		const defaultColoursPalette = document.createElement('div');
 		defaultColoursPalette.classList.add('default-colours');
-		defaultColoursPalette.classList.add('colour-palette');
 		this.options.defaultColours.forEach((colourRow) => 
 		{
 			const colourPaletteRow = document.createElement('div');
-			colourPaletteRow.classList.add('colour-palette__row');
+			colourPaletteRow.classList.add('default-colours__row');
 
 			colourRow.forEach((colour) => {
 				const colourOption = document.createElement('div');
