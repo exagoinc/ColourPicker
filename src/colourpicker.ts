@@ -372,26 +372,19 @@ export class ColourPicker {
 	private CreateDefaultColoursPalette(): HTMLElement {
 		const defaultColoursPalette = document.createElement('div');
 		defaultColoursPalette.classList.add('default-colours');
-		this.options.defaultColours.forEach((colourRow) => 
-		{
-			const colourPaletteRow = document.createElement('div');
-			colourPaletteRow.classList.add('default-colours__row');
+		this.options.defaultColours.forEach((colour) => {
+			const colourOption = document.createElement('div');
+			colourOption.classList.add('colour-option');
+			colourOption.style.backgroundColor = colour.ToCssString(true);
+			if (colour.GetHSL().L > 0.9)
+				colourOption.style.border = '1px solid rgba(200, 200, 200, 0.5)';
 
-			colourRow.forEach((colour) => {
-				const colourOption = document.createElement('div');
-				colourOption.classList.add('colour-option');
-				colourOption.style.backgroundColor = colour.ToCssString(true);
-				if (colour.GetHSL().L > 0.9)
-					colourOption.style.border = '1px solid rgba(200, 200, 200, 0.5)';
-
-				colourOption.addEventListener('click', () => {
-					this.SetColour(colour);
-					this.onChange(colour);
-				});
-				colourPaletteRow.appendChild(colourOption);
+			colourOption.addEventListener('click', () => {
+				this.SetColour(colour);
+				this.onChange(colour);
 			});
 
-			defaultColoursPalette.appendChild(colourPaletteRow);
+			defaultColoursPalette.appendChild(colourOption);
 		});
 		
 		return defaultColoursPalette;
@@ -515,7 +508,7 @@ export class ColourPicker {
 export class ColourPickerOptions{
 	public initialColour: Colour = new Colour({ R: 255, G: 0, B: 0, A: 100 });
 	public showAlphaControl: boolean = false;
-	public defaultColours: Colour[][] = [[]];
+	public defaultColours: Colour[] = [];
 	public showCustomColours: boolean = false;
 	public defaultCustomColours: Colour[] = [];
 	public resetColour: Colour = null;

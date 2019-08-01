@@ -137,22 +137,13 @@
 }
 
 .default-colours {
-	display: flex;
-	flex-direction: column;
+	display: grid;
 	width: 100%;
 	margin-top: 4px;
 }
 
-.default-colours__row {
-	display: flex;
-    justify-content: space-between;
-	width: calc(100% + 3px);
-}
-
 .custom-colours {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
+	display: grid;
 	width: 100%;
 	margin-top: 3px;
 }
@@ -187,8 +178,8 @@
 .colour-option-delete {
 	display: none;
 	position: absolute;
-	top: -4px;
-	right: -4px;
+	top: -5px;
+	right: -5px;
 	width: 13px;
 	height: 13px;
 	box-sizing: border-box;
@@ -197,9 +188,11 @@
 	
 	opacity: 0;
 	background-color: red;
-	box-shadow: inset 0 0 3px rgb(0, 0, 0);
+	box-shadow: 0 0 1px rgb(0, 0, 0, 0.5);
 	border-radius: 50%;
-	background-image: url('');
+	background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOSIgaGVpZ2h0PSI5IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNOC40IDEuOEEuOC44IDAgMCAwIDcuMi42TDQuNSAzLjMgMS44LjZBLjguOCAwIDEgMCAuNiAxLjhsMi43IDIuN0wuNiA3LjJhLjguOCAwIDEgMCAxLjIgMS4ybDIuNy0yLjcgMi43IDIuN2EuOC44IDAgMCAwIDEuMi0xLjJMNS43IDQuNWwyLjctMi43eiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==');
+	background-repeat: no-repeat;
+	background-position: center;
 
 	cursor: pointer;
 	transition: all 0.1s ease;

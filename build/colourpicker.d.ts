@@ -41,7 +41,7 @@ export declare class ColourPicker {
 export declare class ColourPickerOptions {
     initialColour: Colour;
     showAlphaControl: boolean;
-    defaultColours: Colour[][];
+    defaultColours: Colour[];
     showCustomColours: boolean;
     defaultCustomColours: Colour[];
     resetColour: Colour;
