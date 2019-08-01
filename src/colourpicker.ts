@@ -411,6 +411,14 @@ export class ColourPicker {
 				this.SetColour(colour);
 				this.onChange(colour);
 			});
+
+			const colourOptionDeleteButton = document.createElement('div');
+			colourOptionDeleteButton.classList.add('colour-option-delete');
+			colourOptionDeleteButton.addEventListener('click', () => {
+				customColoursPalette.removeChild(colourOption);
+			});
+			colourOption.appendChild(colourOptionDeleteButton);
+
 			customColoursPalette.appendChild(colourOption);
 		});
 

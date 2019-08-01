@@ -146,8 +146,7 @@
 .default-colours__row {
 	display: flex;
     justify-content: space-between;
-	width: 100%;
-	margin-top: 3px;
+	width: calc(100% + 3px);
 }
 
 .custom-colours {
@@ -163,11 +162,11 @@
 }
 
 .colour-option {
-	min-width: 12px;
-    min-height: 22px;
-    max-width: 22px;
-    width: 100%;
+	position: relative;
+    height: 22px;
+    width: 22px;
 	box-sizing: border-box;
+	margin: 0 3px 3px 0;
 	border-radius: 4px;
 	
 	box-shadow: 0px 1px 1px rgba(0,0,0,0.1);
@@ -177,5 +176,35 @@
 
 	&:hover {
 		box-shadow: 0px 1px 2px rgba(0,0,0,0.2);
+
+		.colour-option-delete {
+			display: block;
+			opacity: 1;
+		}
+	}
+}
+
+.colour-option-delete {
+	display: none;
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	width: 13px;
+	height: 13px;
+	box-sizing: border-box;
+	transform: scale(1);
+	z-index: 1;
+	
+	opacity: 0;
+	background-color: red;
+	box-shadow: inset 0 0 3px rgb(0, 0, 0);
+	border-radius: 50%;
+	background-image: url('');
+
+	cursor: pointer;
+	transition: all 0.1s ease;
+	
+	&:hover {
+		transform: scale(1.1);
 	}
 }
