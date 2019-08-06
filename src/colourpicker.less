@@ -136,16 +136,13 @@
 	background-repeat: no-repeat;	
 }
 
-.default-colours {
-	display: grid;
+.colour-option-grid {
 	width: 100%;
 	margin-top: 4px;
-}
-
-.custom-colours {
 	display: grid;
-	width: 100%;
-	margin-top: 3px;
+	grid-template-columns: repeat(auto-fill, 21px);
+	grid-gap: 3px;
+	justify-content: center;
 }
 
 .colour-palette-spacer {
@@ -154,8 +151,8 @@
 
 .colour-option {
 	position: relative;
-    height: 22px;
-    width: 22px;
+    height: 21px;
+    width: 21px;
 	box-sizing: border-box;
 	margin: 0 3px 3px 0;
 	border-radius: 4px;

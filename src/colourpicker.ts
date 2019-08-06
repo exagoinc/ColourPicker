@@ -372,6 +372,7 @@ export class ColourPicker {
 	private CreateDefaultColoursPalette(): HTMLElement {
 		const defaultColoursPalette = document.createElement('div');
 		defaultColoursPalette.classList.add('default-colours');
+		defaultColoursPalette.classList.add('colour-option-grid');
 		this.options.defaultColours.forEach((colour) => {
 			const colourOption = document.createElement('div');
 			colourOption.classList.add('colour-option');
@@ -393,6 +394,7 @@ export class ColourPicker {
 	private CreateCustomColoursPalette(): HTMLElement {
 		const customColoursPalette = document.createElement('div');
 		customColoursPalette.classList.add('custom-colours');
+		customColoursPalette.classList.add('colour-option-grid');
 		this.options.defaultCustomColours.forEach((colour) => {
 			const colourOption = document.createElement('div');
 			colourOption.classList.add('colour-option');
@@ -407,8 +409,9 @@ export class ColourPicker {
 
 			const colourOptionDeleteButton = document.createElement('div');
 			colourOptionDeleteButton.classList.add('colour-option-delete');
-			colourOptionDeleteButton.addEventListener('click', () => {
+			colourOptionDeleteButton.addEventListener('click', (evt) => {
 				customColoursPalette.removeChild(colourOption);
+				evt.preventDefault();
 			});
 			colourOption.appendChild(colourOptionDeleteButton);
 
