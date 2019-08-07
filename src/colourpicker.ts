@@ -411,7 +411,7 @@ export class ColourPicker {
 			colourOptionDeleteButton.classList.add('colour-option-delete');
 			colourOptionDeleteButton.addEventListener('click', (evt) => {
 				customColoursPalette.removeChild(colourOption);
-				evt.preventDefault();
+				evt.stopPropagation(); // Prevent updating of colour
 			});
 			colourOption.appendChild(colourOptionDeleteButton);
 
