@@ -393,6 +393,7 @@ export class ColourPicker {
 
 		const customColourAddButton = document.createElement('div');
 		customColourAddButton.classList.add('colour-option-add');
+		customColourAddButton.classList.add('colour-option');
 		customColourAddButton.addEventListener('click', () => {
 			const currentColour = this.GetColour();
 			const newCustomColourOption = this.CreateColourOption(currentColour, true);

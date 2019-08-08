@@ -199,5 +199,15 @@
 }
 
 .colour-option-add {
+	border: 1px solid rgba(200, 200, 200, 0.5);
 	background-image: url('data:image/svg+xml,%3Csvg width="13" height="13" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M11.2 7.4a.8.8 0 1 0 0-1.7H7.4V1.8a.8.8 0 0 0-1.7 0v3.9H1.8a.8.8 0 1 0 0 1.7h3.9v3.8a.8.8 0 0 0 1.7 0V7.4h3.8z" fill="%23C8C8C8"/%3E%3C/svg%3E');
+	background-repeat: no-repeat;
+	background-position: center;
+	transition: all 0s ease;
+
+	&:hover {
+		background-color: rgba(200, 200, 200, 1);
+		background-image: url('data:image/svg+xml,%3Csvg width="13" height="13" fill="none" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath fill-rule="evenodd" clip-rule="evenodd" d="M11.2 7.4a.8.8 0 1 0 0-1.7H7.4V1.8a.8.8 0 0 0-1.7 0v3.9H1.8a.8.8 0 1 0 0 1.7h3.9v3.8a.8.8 0 0 0 1.7 0V7.4h3.8z" fill="%23FFFFFF"/%3E%3C/svg%3E');
+		transition: all 0.1s ease;
+	}
 }
