@@ -120,7 +120,7 @@ export class ColourPicker {
 	}
 	
 	private ColourFieldMouseDown(evt: MouseEvent | TouchEvent): void {
-		// Allow dragging to begin only from the color field or
+		// Allow dragging to begin only from the colour field or
 		// the field marker.
 		if (evt.target !== this.colourField && evt.target !== this.fieldMarker)
 			return;
@@ -374,17 +374,7 @@ export class ColourPicker {
 		defaultColoursPalette.classList.add('default-colours');
 		defaultColoursPalette.classList.add('colour-option-grid');
 		this.options.defaultColours.forEach((colour) => {
-			const colourOption = document.createElement('div');
-			colourOption.classList.add('colour-option');
-			colourOption.style.backgroundColor = colour.ToCssString(true);
-			if (colour.GetHSL().L > 0.9)
-				colourOption.style.border = '1px solid rgba(200, 200, 200, 0.5)';
-
-			colourOption.addEventListener('click', () => {
-				this.SetColour(colour);
-				this.onChange(colour);
-			});
-
+			const colourOption = this.CreateColourOption(colour, false);
 			defaultColoursPalette.appendChild(colourOption);
 		});
 		
@@ -395,30 +385,55 @@ export class ColourPicker {
 		const customColoursPalette = document.createElement('div');
 		customColoursPalette.classList.add('custom-colours');
 		customColoursPalette.classList.add('colour-option-grid');
+
 		this.options.defaultCustomColours.forEach((colour) => {
-			const colourOption = document.createElement('div');
-			colourOption.classList.add('colour-option');
-			colourOption.style.backgroundColor = colour.ToCssString(true);
-			if (colour.GetHSL().L > 0.9)
-				colourOption.style.border = '1px solid rgba(200, 200, 200, 0.5)';
-
-			colourOption.addEventListener('click', () => {
-				this.SetColour(colour);
-				this.onChange(colour);
-			});
-
-			const colourOptionDeleteButton = document.createElement('div');
-			colourOptionDeleteButton.classList.add('colour-option-delete');
-			colourOptionDeleteButton.addEventListener('click', (evt) => {
-				customColoursPalette.removeChild(colourOption);
-				evt.stopPropagation(); // Prevent updating of colour
-			});
-			colourOption.appendChild(colourOptionDeleteButton);
-
+			const colourOption = this.CreateColourOption(colour, true);
 			customColoursPalette.appendChild(colourOption);
 		});
 
+		const customColourAddButton = document.createElement('div');
+		customColourAddButton.classList.add('colour-option-add');
+		customColourAddButton.addEventListener('click', () => {
+			const currentColour = this.GetColour();
+			const newCustomColourOption = this.CreateColourOption(currentColour, true);
+			customColourAddButton.insertAdjacentElement('beforebegin', newCustomColourOption);
+			if (this.options.onCustomColourAdd)
+				this.options.onCustomColourAdd(currentColour);
+		});
+		customColoursPalette.appendChild(customColourAddButton);
+
 		return customColoursPalette;
+	}
+
+	private CreateColourOption(colour: Colour, allowDeletion: boolean): HTMLElement {
+		const colourOption = document.createElement('div');
+		colourOption.classList.add('colour-option');
+		colourOption.style.backgroundColor = colour.ToCssString(true);
+		if (colour.GetHSL().L > 0.9)
+			colourOption.style.border = '1px solid rgba(200, 200, 200, 0.5)';
+
+		colourOption.addEventListener('click', () => {
+			this.SetColour(colour);
+			this.onChange(colour);
+		});
+
+		if (allowDeletion) {
+			const colourOptionDeleteButton = document.createElement('div');
+			colourOptionDeleteButton.classList.add('colour-option-delete');
+			colourOptionDeleteButton.addEventListener('click', (evt) => {
+				this.OnDeleteButtonClick(evt, colour, colourOption);
+			});
+			colourOption.appendChild(colourOptionDeleteButton);
+		}
+
+		return colourOption;
+	}
+
+	private OnDeleteButtonClick(evt: MouseEvent, colour: Colour, colourOption: HTMLElement): void {
+		colourOption.remove();
+		evt.stopPropagation(); // Prevent updating of colour
+		if (this.options.onCustomColourDelete)
+			this.options.onCustomColourDelete(colour);
 	}
 
 	private IntegerInputMouseDown(evt: MouseEvent, intInput: HTMLInputElement, maxValue: number): void {
@@ -514,6 +529,8 @@ export class ColourPickerOptions{
 	public defaultColours: Colour[] = [];
 	public showCustomColours: boolean = false;
 	public defaultCustomColours: Colour[] = [];
+	public onCustomColourAdd: (addedColour: Colour) => void;
+	public onCustomColourDelete: (deletedColour: Colour) => void;
 	public resetColour: Colour = null;
 
 	/** Labels that appear underneath input boxes */

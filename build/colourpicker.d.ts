@@ -32,6 +32,8 @@ export declare class ColourPicker {
     private CreateResetColourButton;
     private CreateDefaultColoursPalette;
     private CreateCustomColoursPalette;
+    private CreateColourOption;
+    private OnDeleteButtonClick;
     private IntegerInputMouseDown;
     private OnChange;
     private UpdateHexInput;
@@ -44,6 +46,8 @@ export declare class ColourPickerOptions {
     defaultColours: Colour[];
     showCustomColours: boolean;
     defaultCustomColours: Colour[];
+    onCustomColourAdd: (addedColour: Colour) => void;
+    onCustomColourDelete: (deletedColour: Colour) => void;
     resetColour: Colour;
     hexInputLabel: string;
     redInputLabel: string;
