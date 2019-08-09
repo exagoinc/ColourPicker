@@ -1,7 +1,7 @@
 /**
  * ColourPicker
  * A pure TypeScript colour picker
- * https://github.com/lrvolle/ColourPicker
+ * https://github.com/volleio/ColourPicker
  */
 
 export class ColourPicker {
@@ -18,8 +18,9 @@ export class ColourPicker {
 	private greenInput: HTMLInputElement;
 	private blueInput: HTMLInputElement;
 	private alphaInput: HTMLInputElement;
+	private resetColourButton: HTMLElement;
 	private defaultColoursPalette: HTMLElement;
-	private recentColoursPalette: HTMLElement;
+	private customColoursPalette: HTMLElement;
 
 	private onChange: (colour: Colour) => void;
 
@@ -50,8 +51,24 @@ export class ColourPicker {
 		const valueInputContainer = this.CreateValueInputs();
 		docFragment.appendChild(valueInputContainer);
 
+		if (this.options.resetColour != null) {
+			this.resetColourButton = this.CreateResetColourButton();
+			docFragment.appendChild(this.resetColourButton);
+		}
+
 		this.defaultColoursPalette = this.CreateDefaultColoursPalette();
 		docFragment.appendChild(this.defaultColoursPalette);
+
+		if (this.defaultColoursPalette.childElementCount > 0 && this.options.showCustomColours) {
+			const colourPaletteSpacer = document.createElement('div');
+			colourPaletteSpacer.classList.add('colour-palette-spacer');
+			docFragment.appendChild(colourPaletteSpacer);
+		}
+
+		if (this.options.showCustomColours) {
+			this.customColoursPalette = this.CreateCustomColoursPalette();
+			docFragment.appendChild(this.customColoursPalette);
+		}
 
 		this.container.classList.add('colour-picker');
 		this.container.appendChild(docFragment);
@@ -103,7 +120,7 @@ export class ColourPicker {
 	}
 	
 	private ColourFieldMouseDown(evt: MouseEvent | TouchEvent): void {
-		// Allow dragging to begin only from the color field or
+		// Allow dragging to begin only from the colour field or
 		// the field marker.
 		if (evt.target !== this.colourField && evt.target !== this.fieldMarker)
 			return;
@@ -331,33 +348,93 @@ export class ColourPicker {
 		return intInputContainer;
 	}
 
+	private CreateResetColourButton(): HTMLElement {
+		const resetColourButton = document.createElement('div');
+		resetColourButton.classList.add('reset-colour-button');
+
+		const resetColourButtonIcon = document.createElement('div');
+		resetColourButtonIcon.classList.add('reset-colour-button__icon');
+		resetColourButton.appendChild(resetColourButtonIcon);
+
+		const resetColourButtonLabel = document.createElement('span');
+		resetColourButtonLabel.classList.add('reset-colour-button__span');
+		resetColourButtonLabel.innerHTML = this.options.resetColourLabel;
+		resetColourButton.appendChild(resetColourButtonLabel);
+		
+		resetColourButton.addEventListener('click', () => {
+			this.SetColour(this.options.resetColour);
+			this.onChange(this.options.resetColour);
+		});
+
+		return resetColourButton;
+	}
+
 	private CreateDefaultColoursPalette(): HTMLElement {
 		const defaultColoursPalette = document.createElement('div');
 		defaultColoursPalette.classList.add('default-colours');
-		defaultColoursPalette.classList.add('colour-palette');
-		this.options.defaultColours.forEach((colourRow) => 
-		{
-			const colourPaletteRow = document.createElement('div');
-			colourPaletteRow.classList.add('colour-palette__row');
-
-			colourRow.forEach((colour) => {
-				const colourOption = document.createElement('div');
-				colourOption.classList.add('colour-option');
-				colourOption.style.backgroundColor = colour.ToCssString(true);
-				if (colour.GetHSL().L > 0.9)
-					colourOption.style.border = '1px solid rgba(200, 200, 200, 0.5)';
-
-				colourOption.addEventListener('click', () => {
-					this.SetColour(colour);
-					this.onChange(colour);
-				});
-				colourPaletteRow.appendChild(colourOption);
-			});
-
-			defaultColoursPalette.appendChild(colourPaletteRow);
+		defaultColoursPalette.classList.add('colour-option-grid');
+		this.options.defaultColours.forEach((colour) => {
+			const colourOption = this.CreateColourOption(colour, false);
+			defaultColoursPalette.appendChild(colourOption);
 		});
 		
 		return defaultColoursPalette;
+	}
+
+	private CreateCustomColoursPalette(): HTMLElement {
+		const customColoursPalette = document.createElement('div');
+		customColoursPalette.classList.add('custom-colours');
+		customColoursPalette.classList.add('colour-option-grid');
+
+		this.options.defaultCustomColours.forEach((colour) => {
+			const colourOption = this.CreateColourOption(colour, true);
+			customColoursPalette.appendChild(colourOption);
+		});
+
+		const customColourAddButton = document.createElement('div');
+		customColourAddButton.classList.add('colour-option-add');
+		customColourAddButton.classList.add('colour-option');
+		customColourAddButton.addEventListener('click', () => {
+			const currentColour = this.GetColour();
+			const newCustomColourOption = this.CreateColourOption(currentColour, true);
+			customColourAddButton.insertAdjacentElement('beforebegin', newCustomColourOption);
+			if (this.options.onCustomColourAdd)
+				this.options.onCustomColourAdd(currentColour);
+		});
+		customColoursPalette.appendChild(customColourAddButton);
+
+		return customColoursPalette;
+	}
+
+	private CreateColourOption(colour: Colour, allowDeletion: boolean): HTMLElement {
+		const colourOption = document.createElement('div');
+		colourOption.classList.add('colour-option');
+		colourOption.style.backgroundColor = colour.ToCssString(true);
+		if (colour.GetHSL().L > 0.9)
+			colourOption.style.border = '1px solid rgba(200, 200, 200, 0.5)';
+
+		colourOption.addEventListener('click', () => {
+			this.SetColour(colour);
+			this.onChange(colour);
+		});
+
+		if (allowDeletion) {
+			const colourOptionDeleteButton = document.createElement('div');
+			colourOptionDeleteButton.classList.add('colour-option-delete');
+			colourOptionDeleteButton.addEventListener('click', (evt) => {
+				this.OnDeleteButtonClick(evt, colour, colourOption);
+			});
+			colourOption.appendChild(colourOptionDeleteButton);
+		}
+
+		return colourOption;
+	}
+
+	private OnDeleteButtonClick(evt: MouseEvent, colour: Colour, colourOption: HTMLElement): void {
+		colourOption.remove();
+		evt.stopPropagation(); // Prevent updating of colour
+		if (this.options.onCustomColourDelete)
+			this.options.onCustomColourDelete(colour);
 	}
 
 	private IntegerInputMouseDown(evt: MouseEvent, intInput: HTMLInputElement, maxValue: number): void {
@@ -448,10 +525,14 @@ export class ColourPicker {
 }
 
 export class ColourPickerOptions{
-	public initialColour: Colour = new Colour({ R: 255, G: 0, B: 0, A: 100 });
+	public initialColour: Colour = new Colour({ R: 255, G: 255, B: 255, A: 100 });
 	public showAlphaControl: boolean = false;
-	public defaultColours: Colour[][] = [[]];
-	public showRecentColours: boolean = false;
+	public defaultColours: Colour[] = [];
+	public showCustomColours: boolean = false;
+	public defaultCustomColours: Colour[] = [];
+	public onCustomColourAdd: (addedColour: Colour) => void;
+	public onCustomColourDelete: (deletedColour: Colour) => void;
+	public resetColour: Colour = null;
 
 	/** Labels that appear underneath input boxes */
 	public hexInputLabel: string = 'Hex';
@@ -459,6 +540,7 @@ export class ColourPickerOptions{
 	public greenInputLabel?: string = 'G';
 	public blueInputLabel?: string = 'B';
 	public alphaInputLabel?: string = 'A';
+	public resetColourLabel?: string = 'Reset';
 }
 
 export class Colour {

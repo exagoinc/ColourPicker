@@ -4,19 +4,19 @@
 	"description": "A pure TypeScript colour picker",
 	"main": "colourpicker.js",
 	"scripts": {
-		"test": "concurrently --kill-others \"tsc -w\" \"less-watch-compiler --source-map src build\" \"http-server\"",
-		"build": "tsc && less-watch-compiler --run-once src build"
+		"build": "tsc && less-watch-compiler --run-once src build",
+		"dev": "concurrently --kill-others \"tsc -w\" \"less-watch-compiler --source-map src build\" \"http-server\""
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/lrvolle/ColourPicker.git"
+		"url": "git+https://github.com/volleio/ColourPicker.git"
 	},
 	"author": "Lucas Volle",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/lrvolle/ColourPicker/issues"
+		"url": "https://github.com/volleio/ColourPicker/issues"
 	},
-	"homepage": "https://github.com/lrvolle/ColourPicker#readme",
+	"homepage": "https://github.com/volleio/ColourPicker#readme",
 	"devDependencies": {
 		"concurrently": "^3.6.1",
 		"less-watch-compiler": "^1.13.0",
