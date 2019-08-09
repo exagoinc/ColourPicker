@@ -525,7 +525,7 @@ export class ColourPicker {
 }
 
 export class ColourPickerOptions{
-	public initialColour: Colour = new Colour({ R: 255, G: 0, B: 0, A: 100 });
+	public initialColour: Colour = new Colour({ R: 255, G: 255, B: 255, A: 100 });
 	public showAlphaControl: boolean = false;
 	public defaultColours: Colour[] = [];
 	public showCustomColours: boolean = false;
