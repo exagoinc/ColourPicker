@@ -18,8 +18,21 @@ var ColourPicker = (function () {
         docFragment.appendChild(this.hueSlider);
         var valueInputContainer = this.CreateValueInputs();
         docFragment.appendChild(valueInputContainer);
+        if (this.options.resetColour != null) {
+            this.resetColourButton = this.CreateResetColourButton();
+            docFragment.appendChild(this.resetColourButton);
+        }
         this.defaultColoursPalette = this.CreateDefaultColoursPalette();
         docFragment.appendChild(this.defaultColoursPalette);
+        if (this.defaultColoursPalette.childElementCount > 0 && this.options.showCustomColours) {
+            var colourPaletteSpacer = document.createElement('div');
+            colourPaletteSpacer.classList.add('colour-palette-spacer');
+            docFragment.appendChild(colourPaletteSpacer);
+        }
+        if (this.options.showCustomColours) {
+            this.customColoursPalette = this.CreateCustomColoursPalette();
+            docFragment.appendChild(this.customColoursPalette);
+        }
         this.container.classList.add('colour-picker');
         this.container.appendChild(docFragment);
         this.container.addEventListener('mousedown', function (evt) { _this.ColourFieldMouseDown(evt); });
@@ -242,29 +255,82 @@ var ColourPicker = (function () {
         intInputContainer.appendChild(intInputLbl);
         return intInputContainer;
     };
+    ColourPicker.prototype.CreateResetColourButton = function () {
+        var _this = this;
+        var resetColourButton = document.createElement('div');
+        resetColourButton.classList.add('reset-colour-button');
+        var resetColourButtonIcon = document.createElement('div');
+        resetColourButtonIcon.classList.add('reset-colour-button__icon');
+        resetColourButton.appendChild(resetColourButtonIcon);
+        var resetColourButtonLabel = document.createElement('span');
+        resetColourButtonLabel.classList.add('reset-colour-button__span');
+        resetColourButtonLabel.innerHTML = this.options.resetColourLabel;
+        resetColourButton.appendChild(resetColourButtonLabel);
+        resetColourButton.addEventListener('click', function () {
+            _this.SetColour(_this.options.resetColour);
+            _this.onChange(_this.options.resetColour);
+        });
+        return resetColourButton;
+    };
     ColourPicker.prototype.CreateDefaultColoursPalette = function () {
         var _this = this;
         var defaultColoursPalette = document.createElement('div');
         defaultColoursPalette.classList.add('default-colours');
-        defaultColoursPalette.classList.add('colour-palette');
-        this.options.defaultColours.forEach(function (colourRow) {
-            var colourPaletteRow = document.createElement('div');
-            colourPaletteRow.classList.add('colour-palette__row');
-            colourRow.forEach(function (colour) {
-                var colourOption = document.createElement('div');
-                colourOption.classList.add('colour-option');
-                colourOption.style.backgroundColor = colour.ToCssString(true);
-                if (colour.GetHSL().L > 0.9)
-                    colourOption.style.border = '1px solid rgba(200, 200, 200, 0.5)';
-                colourOption.addEventListener('click', function () {
-                    _this.SetColour(colour);
-                    _this.onChange(colour);
-                });
-                colourPaletteRow.appendChild(colourOption);
-            });
-            defaultColoursPalette.appendChild(colourPaletteRow);
+        defaultColoursPalette.classList.add('colour-option-grid');
+        this.options.defaultColours.forEach(function (colour) {
+            var colourOption = _this.CreateColourOption(colour, false);
+            defaultColoursPalette.appendChild(colourOption);
         });
         return defaultColoursPalette;
+    };
+    ColourPicker.prototype.CreateCustomColoursPalette = function () {
+        var _this = this;
+        var customColoursPalette = document.createElement('div');
+        customColoursPalette.classList.add('custom-colours');
+        customColoursPalette.classList.add('colour-option-grid');
+        this.options.defaultCustomColours.forEach(function (colour) {
+            var colourOption = _this.CreateColourOption(colour, true);
+            customColoursPalette.appendChild(colourOption);
+        });
+        var customColourAddButton = document.createElement('div');
+        customColourAddButton.classList.add('colour-option-add');
+        customColourAddButton.classList.add('colour-option');
+        customColourAddButton.addEventListener('click', function () {
+            var currentColour = _this.GetColour();
+            var newCustomColourOption = _this.CreateColourOption(currentColour, true);
+            customColourAddButton.insertAdjacentElement('beforebegin', newCustomColourOption);
+            if (_this.options.onCustomColourAdd)
+                _this.options.onCustomColourAdd(currentColour);
+        });
+        customColoursPalette.appendChild(customColourAddButton);
+        return customColoursPalette;
+    };
+    ColourPicker.prototype.CreateColourOption = function (colour, allowDeletion) {
+        var _this = this;
+        var colourOption = document.createElement('div');
+        colourOption.classList.add('colour-option');
+        colourOption.style.backgroundColor = colour.ToCssString(true);
+        if (colour.GetHSL().L > 0.9)
+            colourOption.style.border = '1px solid rgba(200, 200, 200, 0.5)';
+        colourOption.addEventListener('click', function () {
+            _this.SetColour(colour);
+            _this.onChange(colour);
+        });
+        if (allowDeletion) {
+            var colourOptionDeleteButton = document.createElement('div');
+            colourOptionDeleteButton.classList.add('colour-option-delete');
+            colourOptionDeleteButton.addEventListener('click', function (evt) {
+                _this.OnDeleteButtonClick(evt, colour, colourOption);
+            });
+            colourOption.appendChild(colourOptionDeleteButton);
+        }
+        return colourOption;
+    };
+    ColourPicker.prototype.OnDeleteButtonClick = function (evt, colour, colourOption) {
+        colourOption.remove();
+        evt.stopPropagation();
+        if (this.options.onCustomColourDelete)
+            this.options.onCustomColourDelete(colour);
     };
     ColourPicker.prototype.IntegerInputMouseDown = function (evt, intInput, maxValue) {
         var _this = this;
@@ -344,15 +410,18 @@ var ColourPicker = (function () {
 export { ColourPicker };
 var ColourPickerOptions = (function () {
     function ColourPickerOptions() {
-        this.initialColour = new Colour({ R: 255, G: 0, B: 0, A: 100 });
+        this.initialColour = new Colour({ R: 255, G: 255, B: 255, A: 100 });
         this.showAlphaControl = false;
-        this.defaultColours = [[]];
-        this.showRecentColours = false;
+        this.defaultColours = [];
+        this.showCustomColours = false;
+        this.defaultCustomColours = [];
+        this.resetColour = null;
         this.hexInputLabel = 'Hex';
         this.redInputLabel = 'R';
         this.greenInputLabel = 'G';
         this.blueInputLabel = 'B';
         this.alphaInputLabel = 'A';
+        this.resetColourLabel = 'Reset';
     }
     return ColourPickerOptions;
 }());
