@@ -19,8 +19,8 @@ export class ColourPicker {
 	private blueInput: HTMLInputElement;
 	private alphaInput: HTMLInputElement;
 	private resetColourButton: HTMLElement;
-	private defaultColoursPalette: HTMLElement;
-	private customColoursPalette: HTMLElement;
+	private colourPalette: HTMLElement;
+	private customColours: HTMLElement;
 
 	private onChange: (colour: Colour) => void;
 
@@ -56,18 +56,18 @@ export class ColourPicker {
 			docFragment.appendChild(this.resetColourButton);
 		}
 
-		this.defaultColoursPalette = this.CreateDefaultColoursPalette();
-		docFragment.appendChild(this.defaultColoursPalette);
+		this.colourPalette = this.CreateColourPalette();
+		docFragment.appendChild(this.colourPalette);
 
-		if (this.defaultColoursPalette.childElementCount > 0 && this.options.showCustomColours) {
+		if (this.colourPalette.childElementCount > 0 && this.options.showCustomColours) {
 			const colourPaletteSpacer = document.createElement('div');
 			colourPaletteSpacer.classList.add('colour-palette-spacer');
 			docFragment.appendChild(colourPaletteSpacer);
 		}
 
 		if (this.options.showCustomColours) {
-			this.customColoursPalette = this.CreateCustomColoursPalette();
-			docFragment.appendChild(this.customColoursPalette);
+			this.customColours = this.CreateCustomColours();
+			docFragment.appendChild(this.customColours);
 		}
 
 		this.container.classList.add('colour-picker');
@@ -98,6 +98,29 @@ export class ColourPicker {
 		window.setTimeout(() => {
 			this.UpdateColourField(colour.GetHSV(), colour.ToCssString());
 		}, 0);
+	}
+
+	public SetColourPalette(colourPalette: Colour[]): void {
+		this.options.colourPalette = colourPalette;
+		if (this.colourPalette)
+			this.colourPalette.remove();
+
+		this.colourPalette = this.CreateColourPalette();
+		this.hueSlider.insertAdjacentElement("afterend", this.colourPalette);
+	}
+
+	public SetCustomColours(customColours: Colour[]): void {
+		this.options.customColours = customColours;
+		if (this.customColours)
+			this.customColours.remove();
+		else if (this.colourPalette) {
+			const colourPaletteSpacer = document.createElement('div');
+			colourPaletteSpacer.classList.add('colour-palette-spacer');
+			this.container.appendChild(colourPaletteSpacer);
+		}
+
+		this.customColours = this.CreateCustomColours();
+		this.container.appendChild(this.customColours);
 	}
 
 	/** 
@@ -369,26 +392,26 @@ export class ColourPicker {
 		return resetColourButton;
 	}
 
-	private CreateDefaultColoursPalette(): HTMLElement {
-		const defaultColoursPalette = document.createElement('div');
-		defaultColoursPalette.classList.add('default-colours');
-		defaultColoursPalette.classList.add('colour-option-grid');
-		this.options.defaultColours.forEach((colour) => {
+	private CreateColourPalette(): HTMLElement {
+		const colourPalette = document.createElement('div');
+		colourPalette.classList.add('default-colours');
+		colourPalette.classList.add('colour-option-grid');
+		this.options.colourPalette.forEach((colour) => {
 			const colourOption = this.CreateColourOption(colour, false);
-			defaultColoursPalette.appendChild(colourOption);
+			colourPalette.appendChild(colourOption);
 		});
 		
-		return defaultColoursPalette;
+		return colourPalette;
 	}
 
-	private CreateCustomColoursPalette(): HTMLElement {
-		const customColoursPalette = document.createElement('div');
-		customColoursPalette.classList.add('custom-colours');
-		customColoursPalette.classList.add('colour-option-grid');
+	private CreateCustomColours(): HTMLElement {
+		const customColours = document.createElement('div');
+		customColours.classList.add('custom-colours');
+		customColours.classList.add('colour-option-grid');
 
-		this.options.defaultCustomColours.forEach((colour) => {
+		this.options.customColours.forEach((colour) => {
 			const colourOption = this.CreateColourOption(colour, true);
-			customColoursPalette.appendChild(colourOption);
+			customColours.appendChild(colourOption);
 		});
 
 		const customColourAddButton = document.createElement('div');
@@ -401,9 +424,9 @@ export class ColourPicker {
 			if (this.options.onCustomColourAdd)
 				this.options.onCustomColourAdd(currentColour);
 		});
-		customColoursPalette.appendChild(customColourAddButton);
+		customColours.appendChild(customColourAddButton);
 
-		return customColoursPalette;
+		return customColours;
 	}
 
 	private CreateColourOption(colour: Colour, allowDeletion: boolean): HTMLElement {
@@ -527,9 +550,9 @@ export class ColourPicker {
 export class ColourPickerOptions{
 	public initialColour: Colour = new Colour({ R: 255, G: 255, B: 255, A: 100 });
 	public showAlphaControl: boolean = false;
-	public defaultColours: Colour[] = [];
+	public colourPalette: Colour[] = [];
 	public showCustomColours: boolean = false;
-	public defaultCustomColours: Colour[] = [];
+	public customColours: Colour[] = [];
 	public onCustomColourAdd: (addedColour: Colour) => void;
 	public onCustomColourDelete: (deletedColour: Colour) => void;
 	public resetColour: Colour = null;
