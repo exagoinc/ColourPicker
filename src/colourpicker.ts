@@ -260,7 +260,7 @@ export class ColourPicker {
 
 		const hexInputItem = this.CreateHexInput();
 		valueInputContainer.appendChild(hexInputItem);
-		this.hexInput.addEventListener('keypress', () => {
+		this.hexInput.addEventListener('keydown', () => {
 			requestAnimationFrame(() => {
 				let strippedValue = this.hexInput.value.replace(/[^0-9ABCDEF]/gi, '');
 				strippedValue = '#' + strippedValue.substr(0, 8); // Max length of 8 characters without #
@@ -272,7 +272,7 @@ export class ColourPicker {
 		const rInputItem = this.CreateIntegerInput(cpEnumRGBA.Red, this.options.redInputLabel);
 		this.redInput = rInputItem.querySelector('input');
 		valueInputContainer.appendChild(rInputItem);
-		this.redInput.addEventListener('keypress', () => {
+		this.redInput.addEventListener('keydown', () => {
 			requestAnimationFrame(() => {
 				this.redInput.value = this.redInput.value.replace(/[^0-9]/g, '');
 				this.OnChange(this.GetRGBAFromInputs());
@@ -282,7 +282,7 @@ export class ColourPicker {
 		const gInputItem = this.CreateIntegerInput(cpEnumRGBA.Green, this.options.greenInputLabel);
 		this.greenInput = gInputItem.querySelector('input');
 		valueInputContainer.appendChild(gInputItem);
-		this.greenInput.addEventListener('keypress', () => {
+		this.greenInput.addEventListener('keydown', () => {
 			requestAnimationFrame(() => {
 				this.greenInput.value = this.greenInput.value.replace(/[^0-9]/g, '');
 				this.OnChange(this.GetRGBAFromInputs());
@@ -292,7 +292,7 @@ export class ColourPicker {
 		const bInputItem = this.CreateIntegerInput(cpEnumRGBA.Blue, this.options.blueInputLabel);
 		this.blueInput = bInputItem.querySelector('input');
 		valueInputContainer.appendChild(bInputItem);
-		this.blueInput.addEventListener('keypress', () => {
+		this.blueInput.addEventListener('keydown', () => {
 			requestAnimationFrame(() => {
 				this.blueInput.value = this.blueInput.value.replace(/[^0-9]/g, '');
 				this.OnChange(this.GetRGBAFromInputs());
@@ -303,7 +303,7 @@ export class ColourPicker {
 			const aInputItem = this.CreateIntegerInput(cpEnumRGBA.Alpha, this.options.alphaInputLabel);
 			this.alphaInput = aInputItem.querySelector('input');
 			valueInputContainer.appendChild(aInputItem);
-			this.alphaInput.addEventListener('keypress', () => {
+			this.alphaInput.addEventListener('keydown', () => {
 				requestAnimationFrame(() => {
 					this.alphaInput.value = this.alphaInput.value.replace(/[^0-9]/g, '');
 					this.OnChange(this.GetRGBAFromInputs());
