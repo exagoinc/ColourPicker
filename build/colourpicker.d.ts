@@ -12,12 +12,14 @@ export declare class ColourPicker {
     private blueInput;
     private alphaInput;
     private resetColourButton;
-    private defaultColoursPalette;
-    private customColoursPalette;
+    private colourPalette;
+    private customColours;
     private onChange;
     constructor(container: HTMLElement, onChange: (rgba: Colour) => void, options?: ColourPickerOptions);
     GetColour(): Colour;
     SetColour(colour: Colour): void;
+    SetColourPalette(colourPalette: Colour[]): void;
+    SetCustomColours(customColours: Colour[]): void;
     private CreateColourField;
     private ColourFieldMouseDown;
     private GetColourFieldHSV;
@@ -30,8 +32,8 @@ export declare class ColourPicker {
     private CreateHexInput;
     private CreateIntegerInput;
     private CreateResetColourButton;
-    private CreateDefaultColoursPalette;
-    private CreateCustomColoursPalette;
+    private CreateColourPalette;
+    private CreateCustomColours;
     private CreateColourOption;
     private OnDeleteButtonClick;
     private IntegerInputMouseDown;
@@ -43,9 +45,9 @@ export declare class ColourPicker {
 export declare class ColourPickerOptions {
     initialColour: Colour;
     showAlphaControl: boolean;
-    defaultColours: Colour[];
+    colourPalette: Colour[];
     showCustomColours: boolean;
-    defaultCustomColours: Colour[];
+    customColours: Colour[];
     onCustomColourAdd: (addedColour: Colour) => void;
     onCustomColourDelete: (deletedColour: Colour) => void;
     resetColour: Colour;
