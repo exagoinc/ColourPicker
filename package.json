@@ -2,7 +2,7 @@
 	"name": "colourpicker",
 	"version": "0.0.1",
 	"description": "A pure TypeScript colour picker",
-	"main": "colourpicker.js",
+	"main": "build/colourpicker.js",
 	"scripts": {
 		"build": "tsc && less-watch-compiler --run-once src build",
 		"dev": "concurrently --kill-others \"tsc -w\" \"less-watch-compiler --source-map src build\" \"http-server\""
@@ -19,12 +19,16 @@
 	"homepage": "https://github.com/volleio/ColourPicker#readme",
 	"devDependencies": {
 		"concurrently": "^3.6.1",
-		"less-watch-compiler": "^1.13.0",
-		"tslint": "^5.16.0",
+		"less-watch-compiler": "^1.14.1",
+		"tslint": "^5.20.1",
 		"tslint-config-airbnb-base": "^0.1.0"
 	},
 	"dependencies": {
-		"less": "^3.9.0",
-		"typescript": "^2.9.2"
-	}
+		"less": "^3.10.3",
+		"typescript": "^3.7.2"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/"
+	},
+	"types": "build/colourpicker.d.ts"
 }

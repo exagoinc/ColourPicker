@@ -48,15 +48,15 @@ export declare class ColourPickerOptions {
     colourPalette: Colour[];
     showCustomColours: boolean;
     customColours: Colour[];
-    onCustomColourAdd: (addedColour: Colour) => void;
-    onCustomColourDelete: (deletedColour: Colour) => void;
-    resetColour: Colour;
+    onCustomColourAdd: ((addedColour: Colour) => void) | undefined;
+    onCustomColourDelete: ((deletedColour: Colour) => void) | undefined;
+    resetColour: Colour | undefined;
     hexInputLabel: string;
     redInputLabel: string;
-    greenInputLabel?: string;
-    blueInputLabel?: string;
-    alphaInputLabel?: string;
-    resetColourLabel?: string;
+    greenInputLabel: string;
+    blueInputLabel: string;
+    alphaInputLabel: string;
+    resetColourLabel: string;
 }
 export declare class Colour {
     private R;

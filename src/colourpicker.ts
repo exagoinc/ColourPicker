@@ -8,19 +8,19 @@ export class ColourPicker {
 	private options: ColourPickerOptions;
 
 	private container: HTMLElement;
-	private fieldMarker: HTMLElement;
+	private fieldMarker!: HTMLElement;
 	private colourField: HTMLElement;
 	private colourFieldMarker: HTMLElement;
 	private hueSlider: HTMLElement;
 	private hueSliderHandle: HTMLElement;
-	private hexInput: HTMLInputElement;
-	private redInput: HTMLInputElement;
-	private greenInput: HTMLInputElement;
-	private blueInput: HTMLInputElement;
-	private alphaInput: HTMLInputElement;
-	private resetColourButton: HTMLElement;
+	private hexInput!: HTMLInputElement;
+	private redInput!: HTMLInputElement;
+	private greenInput!: HTMLInputElement;
+	private blueInput!: HTMLInputElement;
+	private alphaInput: HTMLInputElement | undefined;
+	private resetColourButton: HTMLElement | undefined;
 	private colourPalette: HTMLElement;
-	private customColours: HTMLElement;
+	private customColours: HTMLElement | undefined;
 
 	private onChange: (colour: Colour) => void;
 
@@ -185,9 +185,9 @@ export class ColourPicker {
 
 	private SetColourFieldHSV(evt: MouseEvent | TouchEvent): cpHSV {
 		const colourFieldBoundingBox = this.colourField.getBoundingClientRect();
-		let mouseX = Math.max(evt instanceof MouseEvent ? evt.clientX : evt.targetTouches.item(0).clientX, colourFieldBoundingBox.left); 
+		let mouseX = Math.max(evt instanceof MouseEvent ? evt.clientX : (<Touch>evt.targetTouches.item(0)).clientX, colourFieldBoundingBox.left); 
 		mouseX = Math.min(mouseX, colourFieldBoundingBox.right);
-		let mouseY = Math.max(evt instanceof MouseEvent ? evt.clientY : evt.targetTouches.item(0).clientY, colourFieldBoundingBox.top); 
+		let mouseY = Math.max(evt instanceof MouseEvent ? evt.clientY : (<Touch>evt.targetTouches.item(0)).clientY, colourFieldBoundingBox.top); 
 		mouseY = Math.min(mouseY, colourFieldBoundingBox.bottom);
 
 		const colourFieldX = mouseX - colourFieldBoundingBox.left;
@@ -220,7 +220,7 @@ export class ColourPicker {
 		const hsv = this.GetColourFieldHSV(markerX, markerY);
 		this.OnChange(hsv);
 
-		window.getSelection().removeAllRanges();
+		window.getSelection()?.removeAllRanges();
 
 		const mouseMoveCallback = (event: MouseEvent | TouchEvent) => { 
 			this.UpdateHueSliderHandle(event);
@@ -248,7 +248,7 @@ export class ColourPicker {
 
 	private UpdateHueSliderHandle(evt: MouseEvent | TouchEvent) {
 		const hueSliderBoundingBox = this.hueSlider.getBoundingClientRect();
-		let mouseX = Math.max(evt instanceof MouseEvent ? evt.clientX : evt.targetTouches.item(0).clientX, hueSliderBoundingBox.left); 
+		let mouseX = Math.max(evt instanceof MouseEvent ? evt.clientX : (<Touch>evt.targetTouches.item(0))?.clientX, hueSliderBoundingBox.left); 
 		mouseX = Math.min(mouseX, hueSliderBoundingBox.right);
 
 		this.hueSliderHandle.style.left = mouseX - hueSliderBoundingBox.left + 'px';
@@ -270,7 +270,7 @@ export class ColourPicker {
 		});
 
 		const rInputItem = this.CreateIntegerInput(cpEnumRGBA.Red, this.options.redInputLabel);
-		this.redInput = rInputItem.querySelector('input');
+		this.redInput = rInputItem.querySelector('input') as HTMLInputElement;
 		valueInputContainer.appendChild(rInputItem);
 		this.redInput.addEventListener('keydown', () => {
 			requestAnimationFrame(() => {
@@ -280,7 +280,7 @@ export class ColourPicker {
 		});
 
 		const gInputItem = this.CreateIntegerInput(cpEnumRGBA.Green, this.options.greenInputLabel);
-		this.greenInput = gInputItem.querySelector('input');
+		this.greenInput = gInputItem.querySelector('input') as HTMLInputElement;
 		valueInputContainer.appendChild(gInputItem);
 		this.greenInput.addEventListener('keydown', () => {
 			requestAnimationFrame(() => {
@@ -290,7 +290,7 @@ export class ColourPicker {
 		});
 
 		const bInputItem = this.CreateIntegerInput(cpEnumRGBA.Blue, this.options.blueInputLabel);
-		this.blueInput = bInputItem.querySelector('input');
+		this.blueInput = bInputItem.querySelector('input') as HTMLInputElement;
 		valueInputContainer.appendChild(bInputItem);
 		this.blueInput.addEventListener('keydown', () => {
 			requestAnimationFrame(() => {
@@ -301,11 +301,11 @@ export class ColourPicker {
 
 		if (this.options.showAlphaControl) {
 			const aInputItem = this.CreateIntegerInput(cpEnumRGBA.Alpha, this.options.alphaInputLabel);
-			this.alphaInput = aInputItem.querySelector('input');
+			this.alphaInput = aInputItem.querySelector('input') as HTMLInputElement;
 			valueInputContainer.appendChild(aInputItem);
 			this.alphaInput.addEventListener('keydown', () => {
 				requestAnimationFrame(() => {
-					this.alphaInput.value = this.alphaInput.value.replace(/[^0-9]/g, '');
+					(<HTMLInputElement>this.alphaInput).value = this.alphaInput?.value.replace(/[^0-9]/g, '') as string;
 					this.OnChange(this.GetRGBAFromInputs());
 				});
 			});
@@ -326,9 +326,6 @@ export class ColourPicker {
 
 		let a = Math.round(this.alphaInput != null ? parseInt(this.alphaInput.value, 10) : 100);
 		a = Math.max(Math.min(a, 100), 0);
-		
-		if (isNaN(r) || isNaN(g) || isNaN(b) || isNaN(a))
-			return null;
 
 		return { R: r, G: g, B: b, A: a };
 	}
@@ -385,8 +382,8 @@ export class ColourPicker {
 		resetColourButton.appendChild(resetColourButtonLabel);
 		
 		resetColourButton.addEventListener('click', () => {
-			this.SetColour(this.options.resetColour);
-			this.onChange(this.options.resetColour);
+			this.SetColour(this.options.resetColour as Colour);
+			this.onChange(this.options.resetColour as Colour);
 		});
 
 		return resetColourButton;
@@ -498,7 +495,7 @@ export class ColourPicker {
 				return false;
 
 			if (this.options.showAlphaControl && newColour.GetRGBA().A === null)
-				newColour.SetAlpha(parseInt(this.alphaInput.value, 10));
+				newColour.SetAlpha(parseInt(this.alphaInput?.value as string, 10));
 
 			this.UpdateHexInput(colour);
 			this.UpdateRGBAInput(newColour.GetRGBA());
@@ -511,7 +508,7 @@ export class ColourPicker {
 		} else if (colour.hasOwnProperty('H')) {
 			newColour.SetHSV(colour as cpHSV);
 			if (this.options.showAlphaControl)
-				newColour.SetAlpha(parseInt(this.alphaInput.value, 10));
+				newColour.SetAlpha(parseInt(this.alphaInput?.value as string, 10));
 
 			this.UpdateHexInput(newColour.GetHex());
 			this.UpdateRGBAInput(newColour.GetRGBA());
@@ -553,17 +550,17 @@ export class ColourPickerOptions{
 	public colourPalette: Colour[] = [];
 	public showCustomColours: boolean = false;
 	public customColours: Colour[] = [];
-	public onCustomColourAdd: (addedColour: Colour) => void;
-	public onCustomColourDelete: (deletedColour: Colour) => void;
-	public resetColour: Colour = null;
+	public onCustomColourAdd: ((addedColour: Colour) => void) | undefined;
+	public onCustomColourDelete: ((deletedColour: Colour) => void) | undefined;
+	public resetColour: Colour | undefined;
 
 	/** Labels that appear underneath input boxes */
 	public hexInputLabel: string = 'Hex';
 	public redInputLabel: string = 'R';
-	public greenInputLabel?: string = 'G';
-	public blueInputLabel?: string = 'B';
-	public alphaInputLabel?: string = 'A';
-	public resetColourLabel?: string = 'Reset';
+	public greenInputLabel: string = 'G';
+	public blueInputLabel: string = 'B';
+	public alphaInputLabel: string = 'A';
+	public resetColourLabel: string = 'Reset';
 }
 
 export class Colour {
@@ -744,7 +741,7 @@ export class Colour {
 			h = (delta + deltaOffset === 0) ? 0 : (g - b) / delta + deltaOffset;
 		} else if (g === max) {
 			h = (b - r) / delta + 2;
-		} else if (b === max) {
+		} else { // if (b === max)
 			h = (r - g) / delta + 4;
 		}
 
