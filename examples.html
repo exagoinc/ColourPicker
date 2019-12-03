@@ -33,6 +33,7 @@
 	}
 	</style>
 	<link rel="stylesheet" type="text/css" href="build/colourpicker.css">
+	<script src="build/colourpicker.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -42,9 +43,7 @@
 </div>
 </body>
 
-<script type="module">
-	import { ColourPicker, ColourPickerOptions, Colour } from '/build/colourpicker.js';
-
+<script type="text/javascript">
 	const contentElem = document.getElementById("content");
 	const contentHeader = document.getElementById("content-header");
 	const colourPickerElem = document.getElementById("colour-picker-example");
@@ -60,9 +59,9 @@
 	colourPickerOptions.showCustomColours = true;
 	colourPickerOptions.customColours = [ new Colour('#7ECFC0'), new Colour('#F2E3C9'), new Colour('#EC8F6A'), new Colour('#EF4B4B') ];
 
-	const colourPicker = new ColourPicker(colourPickerElem, function (rgba) {
-		contentElem.style.backgroundColor = "rgba(" + rgba.R + ", " + rgba.G + ", " + rgba.B + ", " + rgba.A + "%)";		
-		contentHeader.style.color = rgba.GetHSL().L < 0.5 ? "#FFF" : "#000";
+	const colourPicker = new ColourPicker(colourPickerElem, function (colour) {
+		contentElem.style.backgroundColor = colour.ToCssString(true);
+		contentHeader.style.color = colour.GetHSL().L < 0.5 ? "#FFF" : "#000";
 	}, colourPickerOptions);
 </script>
 </html>

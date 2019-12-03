@@ -1,4 +1,4 @@
-export declare class ColourPicker {
+declare class ColourPicker {
     private options;
     private container;
     private fieldMarker;
@@ -42,7 +42,7 @@ export declare class ColourPicker {
     private UpdateRGBAInput;
     private UpdateColourField;
 }
-export declare class ColourPickerOptions {
+declare class ColourPickerOptions {
     initialColour: Colour;
     showAlphaControl: boolean;
     colourPalette: Colour[];
@@ -58,7 +58,7 @@ export declare class ColourPickerOptions {
     alphaInputLabel: string;
     resetColourLabel: string;
 }
-export declare class Colour {
+declare class Colour {
     private R;
     private G;
     private B;
@@ -93,4 +93,9 @@ interface cpHSL {
     S: number;
     L: number;
 }
-export {};
+declare enum cpEnumRGBA {
+    Red = "r",
+    Green = "g",
+    Blue = "b",
+    Alpha = "a"
+}

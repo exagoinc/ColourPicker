@@ -4,7 +4,7 @@
  * https://github.com/volleio/ColourPicker
  */
 
-export class ColourPicker {
+class ColourPicker {
 	private options: ColourPickerOptions;
 
 	private container: HTMLElement;
@@ -544,7 +544,7 @@ export class ColourPicker {
 	}
 }
 
-export class ColourPickerOptions{
+class ColourPickerOptions{
 	public initialColour: Colour = new Colour({ R: 255, G: 255, B: 255, A: 100 });
 	public showAlphaControl: boolean = false;
 	public colourPalette: Colour[] = [];
@@ -563,7 +563,7 @@ export class ColourPickerOptions{
 	public resetColourLabel: string = 'Reset';
 }
 
-export class Colour {
+class Colour {
 	private R: number = 255;
 	private G: number = 255;
 	private B: number = 255;
@@ -678,7 +678,7 @@ export class Colour {
 	public ToCssString(includeAlpha = false): string {
 		let str = includeAlpha ? 'rgba(' : 'rgb(';
 		str += this.R + ', ' + this.G + ', ' + this.B;
-		str += includeAlpha ? ', ' + this.A + '%)' : ')';
+		str += includeAlpha ? ', ' + this.A / 100 + ')' : ')';
 		return str;
 	}
 
